@@ -1,1960 +1,234 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>유로케어 비뇨기과의원</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --navy: #0d2340;
-  --navy-mid: #163459;
-  --blue: #1a5fa8;
-  --blue-light: #2d7dd2;
-  --sky: #e8f3fc;
-  --sky-pale: #f4f9fe;
-  --teal: #0d8c7c;
-  --teal-light: #13a899;
-  --white: #ffffff;
-  --gray-100: #f5f7fa;
-  --gray-200: #e9ecf0;
-  --gray-400: #9aa3af;
-  --gray-600: #5a6470;
-  --gray-800: #2d3540;
-  --text: #1a2232;
-  --radius: 12px;
-  --shadow: 0 4px 24px rgba(13,35,64,0.10);
-  --shadow-lg: 0 8px 40px rgba(13,35,64,0.15);
-}
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Noto Sans KR', sans-serif;
-  color: var(--text);
-  background: var(--white);
-  line-height: 1.6;
-}
-
-/* ── NAV ── */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1000;
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--gray-200);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 48px;
-  height: 68px;
-  box-shadow: 0 2px 16px rgba(13,35,64,0.07);
-}
-
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-}
-
-.nav-logo-icon {
-  width: 36px; height: 36px;
-  background: linear-gradient(135deg, var(--blue), var(--teal));
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.nav-logo-text {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--navy);
-  letter-spacing: -0.3px;
-}
-
-.nav-logo-sub {
-  font-size: 10px;
-  color: var(--blue);
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  display: block;
-  line-height: 1;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  list-style: none;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: var(--gray-600);
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.nav-links a:hover { color: var(--blue); }
-
-.nav-cta {
-  background: linear-gradient(135deg, var(--blue), var(--blue-light));
-  color: white !important;
-  padding: 10px 22px;
-  border-radius: 8px;
-  font-weight: 600 !important;
-  font-size: 13px !important;
-  transition: all 0.2s !important;
-  box-shadow: 0 2px 12px rgba(26,95,168,0.3);
-}
-
-.nav-cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(26,95,168,0.4) !important;
-  color: white !important;
-}
-
-/* ── HERO ── */
-.hero {
-  padding-top: 68px;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, #1a4a7a 100%);
-}
-
-.hero-bg-pattern {
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 70% 30%, rgba(26,95,168,0.3) 0%, transparent 50%),
-    radial-gradient(circle at 20% 80%, rgba(13,140,124,0.2) 0%, transparent 40%);
-  pointer-events: none;
-}
-
-.hero-grid-lines {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 80px 48px;
-  display: grid;
-  grid-template-columns: 1fr 440px;
-  gap: 80px;
-  align-items: center;
-  width: 100%;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.9);
-  padding: 6px 14px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: 500;
-  margin-bottom: 24px;
-  backdrop-filter: blur(8px);
-}
-
-.hero-badge span {
-  width: 6px; height: 6px;
-  background: var(--teal-light);
-  border-radius: 50%;
-  animation: blink 2s infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.hero-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: clamp(36px, 4.5vw, 58px);
-  color: white;
-  line-height: 1.25;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-.hero-title em {
-  font-style: normal;
-  color: var(--teal-light);
-}
-
-.hero-desc {
-  color: rgba(255,255,255,0.7);
-  font-size: 15px;
-  line-height: 1.9;
-  margin-bottom: 40px;
-  font-weight: 300;
-  max-width: 480px;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, var(--teal), var(--teal-light));
-  color: white;
-  padding: 14px 28px;
-  border-radius: var(--radius);
-  font-weight: 600;
-  font-size: 15px;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  transition: all 0.25s;
-  box-shadow: 0 4px 20px rgba(13,140,124,0.4);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(13,140,124,0.5);
-}
-
-.btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  color: white;
-  padding: 14px 28px;
-  border-radius: var(--radius);
-  font-weight: 500;
-  font-size: 15px;
-  text-decoration: none;
-  border: 1px solid rgba(255,255,255,0.3);
-  cursor: pointer;
-  transition: all 0.25s;
-}
-
-.btn-outline:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.5);
-}
-
-.hero-stats {
-  display: flex;
-  gap: 32px;
-  margin-top: 48px;
-  padding-top: 40px;
-  border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.hero-stat-val {
-  font-size: 28px;
-  font-weight: 700;
-  color: white;
-  font-family: 'Noto Serif KR', serif;
-}
-
-.hero-stat-label {
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
-  margin-top: 2px;
-}
-
-/* Quick Booking Card in Hero */
-.hero-booking-card {
-  background: white;
-  border-radius: 20px;
-  padding: 32px;
-  box-shadow: var(--shadow-lg);
-  position: relative;
-}
-
-.booking-card-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 6px;
-}
-
-.booking-card-sub {
-  font-size: 13px;
-  color: var(--gray-400);
-  margin-bottom: 24px;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--gray-600);
-  margin-bottom: 6px;
-  letter-spacing: 0.03em;
-}
-
-.form-input, .form-select {
-  width: 100%;
-  padding: 11px 14px;
-  border: 1.5px solid var(--gray-200);
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: 'Noto Sans KR', sans-serif;
-  color: var(--text);
-  background: var(--white);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
-}
-
-.form-input:focus, .form-select:focus {
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(26,95,168,0.1);
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.btn-book {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, var(--blue), var(--blue-light));
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: all 0.25s;
-  box-shadow: 0 4px 16px rgba(26,95,168,0.3);
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
-.btn-book:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(26,95,168,0.4);
-}
-
-/* ── SECTION COMMON ── */
-section {
-  padding: 96px 0;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 48px;
-}
-
-.section-badge {
-  display: inline-block;
-  background: var(--sky);
-  color: var(--blue);
-  padding: 5px 14px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  margin-bottom: 14px;
-}
-
-.section-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: clamp(28px, 3.5vw, 40px);
-  color: var(--navy);
-  font-weight: 600;
-  line-height: 1.3;
-  margin-bottom: 12px;
-}
-
-.section-desc {
-  font-size: 15px;
-  color: var(--gray-600);
-  line-height: 1.8;
-  max-width: 540px;
-  font-weight: 300;
-}
-
-/* ── SERVICES ── */
-.services-section {
-  background: var(--gray-100);
-}
-
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-top: 56px;
-}
-
-.service-card {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  border: 1px solid var(--gray-200);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.service-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--blue), var(--teal));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-
-.service-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: transparent;
-}
-
-.service-card:hover::before { transform: scaleX(1); }
-
-.service-icon {
-  width: 52px; height: 52px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-.service-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 10px;
-}
-
-.service-desc {
-  font-size: 13px;
-  color: var(--gray-600);
-  line-height: 1.8;
-  font-weight: 300;
-}
-
-.service-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 16px;
-}
-
-.service-tag {
-  background: var(--sky);
-  color: var(--blue);
-  padding: 3px 10px;
-  border-radius: 100px;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-/* ── DOCTORS ── */
-.doctors-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-  margin-top: 56px;
-}
-
-.doctor-card {
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid var(--gray-200);
-  transition: all 0.3s;
-}
-
-.doctor-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.doctor-photo {
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 72px;
-  position: relative;
-}
-
-.doctor-info {
-  padding: 24px;
-}
-
-.doctor-specialty {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--blue);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.doctor-name {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 10px;
-}
-
-.doctor-career {
-  font-size: 12px;
-  color: var(--gray-600);
-  line-height: 1.8;
-  font-weight: 300;
-}
-
-.doctor-career li {
-  list-style: none;
-  padding-left: 14px;
-  position: relative;
-}
-
-.doctor-career li::before {
-  content: '·';
-  position: absolute;
-  left: 0;
-  color: var(--blue);
-}
-
-/* ── NOTICE / INFO BAR ── */
-.info-bar {
-  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
-  padding: 56px 0;
-  color: white;
-}
-
-.info-bar-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.info-bar-item {
-  background: rgba(255,255,255,0.05);
-  padding: 32px 28px;
-  text-align: center;
-  transition: background 0.2s;
-}
-
-.info-bar-item:hover { background: rgba(255,255,255,0.1); }
-
-.info-bar-icon { font-size: 28px; margin-bottom: 12px; }
-
-.info-bar-label {
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.info-bar-value {
-  font-size: 15px;
-  font-weight: 600;
-  color: white;
-  line-height: 1.6;
-}
-
-.info-bar-value .highlight {
-  color: var(--teal-light);
-}
-
-/* ── FULL BOOKING SECTION ── */
-.booking-section {
-  background: var(--sky-pale);
-}
-
-.booking-layout {
-  display: grid;
-  grid-template-columns: 400px 1fr;
-  gap: 60px;
-  align-items: start;
-  margin-top: 56px;
-}
-
-.booking-info-panel {
-  position: sticky;
-  top: 88px;
-}
-
-.booking-info-item {
-  display: flex;
-  gap: 16px;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--gray-200);
-}
-
-.booking-info-item:last-child { border-bottom: none; }
-
-.booking-info-icon {
-  width: 44px; height: 44px;
-  min-width: 44px;
-  background: var(--sky);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-}
-
-.booking-info-title {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--navy);
-  margin-bottom: 4px;
-}
-
-.booking-info-text {
-  font-size: 13px;
-  color: var(--gray-600);
-  line-height: 1.7;
-  font-weight: 300;
-}
-
-/* Full booking form */
-.booking-form-card {
-  background: white;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--gray-200);
-}
-
-.booking-step-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--blue);
-  letter-spacing: 0.08em;
-  margin-bottom: 6px;
-}
-
-.booking-form-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 28px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--gray-200);
-}
-
-/* Step indicator */
-.steps {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin-bottom: 32px;
-}
-
-.step {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-}
-
-.step-num {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--gray-200);
-  color: var(--gray-400);
-  font-size: 12px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.step.active .step-num {
-  background: var(--blue);
-  color: white;
-}
-
-.step.done .step-num {
-  background: var(--teal);
-  color: white;
-}
-
-.step-label {
-  font-size: 12px;
-  color: var(--gray-400);
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.step.active .step-label { color: var(--navy); font-weight: 600; }
-
-.step-line {
-  flex: 1;
-  height: 1px;
-  background: var(--gray-200);
-  margin: 0 8px;
-}
-
-/* Symptom chips */
-.symptom-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.chip {
-  padding: 7px 14px;
-  border-radius: 100px;
-  border: 1.5px solid var(--gray-200);
-  font-size: 13px;
-  color: var(--gray-600);
-  cursor: pointer;
-  transition: all 0.2s;
-  background: white;
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
-.chip:hover, .chip.selected {
-  border-color: var(--blue);
-  background: var(--sky);
-  color: var(--blue);
-  font-weight: 600;
-}
-
-/* Calendar */
-.calendar-wrapper {
-  border: 1.5px solid var(--gray-200);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.calendar-header {
-  background: var(--navy);
-  color: white;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.cal-nav {
-  background: rgba(255,255,255,0.15);
-  border: none;
-  color: white;
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.cal-nav:hover { background: rgba(255,255,255,0.25); }
-
-.calendar-grid {
-  padding: 16px;
-}
-
-.cal-days-header {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 8px;
-}
-
-.cal-day-name {
-  text-align: center;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--gray-400);
-  padding: 4px 0;
-}
-
-.cal-dates {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-}
-
-.cal-date {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: var(--gray-800);
-  border: none;
-  background: none;
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
-.cal-date:hover:not(.disabled):not(.empty) {
-  background: var(--sky);
-  color: var(--blue);
-}
-
-.cal-date.selected {
-  background: var(--blue) !important;
-  color: white !important;
-  font-weight: 700;
-}
-
-.cal-date.today {
-  background: var(--sky);
-  color: var(--blue);
-  font-weight: 700;
-}
-
-.cal-date.disabled {
-  color: var(--gray-200);
-  cursor: not-allowed;
-}
-
-/* Time slots */
-.time-slots {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.time-slot {
-  padding: 8px 4px;
-  text-align: center;
-  border: 1.5px solid var(--gray-200);
-  border-radius: 8px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: var(--gray-600);
-  background: white;
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
-.time-slot:hover:not(.full) {
-  border-color: var(--blue);
-  background: var(--sky);
-  color: var(--blue);
-}
-
-.time-slot.selected {
-  border-color: var(--blue);
-  background: var(--blue);
-  color: white;
-  font-weight: 600;
-}
-
-.time-slot.full {
-  background: var(--gray-100);
-  color: var(--gray-400);
-  cursor: not-allowed;
-  border-color: var(--gray-200);
-}
-
-/* Form nav buttons */
-.form-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--gray-200);
-}
-
-.btn-prev {
-  background: none;
-  border: 1.5px solid var(--gray-200);
-  color: var(--gray-600);
-  padding: 10px 22px;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif;
-  transition: all 0.2s;
-}
-
-.btn-prev:hover { border-color: var(--blue); color: var(--blue); }
-
-.btn-next {
-  background: linear-gradient(135deg, var(--blue), var(--blue-light));
-  color: white;
-  border: none;
-  padding: 11px 28px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif;
-  transition: all 0.2s;
-  box-shadow: 0 3px 12px rgba(26,95,168,0.3);
-}
-
-.btn-next:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 20px rgba(26,95,168,0.4);
-}
-
-/* Step pages */
-.step-page { display: none; }
-.step-page.active { display: block; }
-
-/* Success state */
-.success-panel {
-  text-align: center;
-  padding: 40px 20px;
-  display: none;
-}
-
-.success-icon {
-  width: 72px; height: 72px;
-  background: linear-gradient(135deg, var(--teal), var(--teal-light));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  margin: 0 auto 24px;
-  box-shadow: 0 8px 24px rgba(13,140,124,0.3);
-}
-
-/* ── REVIEW ── */
-.reviews-section { background: var(--white); }
-
-.reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-top: 56px;
-}
-
-.review-card {
-  background: var(--gray-100);
-  border-radius: 16px;
-  padding: 28px;
-  position: relative;
-}
-
-.review-stars {
-  color: #f5a623;
-  font-size: 14px;
-  margin-bottom: 14px;
-}
-
-.review-text {
-  font-size: 14px;
-  color: var(--gray-600);
-  line-height: 1.8;
-  margin-bottom: 20px;
-  font-weight: 300;
-}
-
-.review-author {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.review-avatar {
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
-  font-size: 16px;
-}
-
-.review-name { font-size: 14px; font-weight: 600; color: var(--navy); }
-.review-date { font-size: 11px; color: var(--gray-400); }
-
-/* ── MAP / LOCATION ── */
-.location-section { background: var(--navy); color: white; }
-
-.location-grid {
-  display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 64px;
-  align-items: center;
-  margin-top: 48px;
-}
-
-.location-map {
-  height: 320px;
-  background: var(--navy-mid);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-/* SVG map illustration */
-.map-svg { width: 100%; height: 100%; }
-
-.location-info-item {
-  display: flex;
-  gap: 16px;
-  padding: 18px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.location-info-item:last-child { border-bottom: none; }
-
-.loc-icon {
-  width: 40px; height: 40px; min-width: 40px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-}
-
-.loc-title { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 4px; font-weight: 500; }
-.loc-val { font-size: 14px; color: white; font-weight: 500; line-height: 1.7; }
-
-/* ── FOOTER ── */
-footer {
-  background: #08161f;
-  color: rgba(255,255,255,0.4);
-  padding: 40px 48px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-}
-
-.footer-logo {
-  font-size: 16px;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 4px;
-}
-
-/* ── REVEAL ANIMATIONS ── */
-.reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ── MODAL ── */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 2000;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(4px);
-}
-
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: white;
-  border-radius: 20px;
-  padding: 48px 40px;
-  max-width: 440px;
-  width: 90%;
-  text-align: center;
-  animation: popIn 0.3s ease;
-}
-
-@keyframes popIn {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .hero-content { grid-template-columns: 1fr; gap: 48px; }
-  .hero-booking-card { max-width: 480px; }
-  .services-grid, .doctors-grid, .reviews-grid { grid-template-columns: 1fr 1fr; }
-  .info-bar-grid { grid-template-columns: 1fr 1fr; }
-  .booking-layout { grid-template-columns: 1fr; }
-  .booking-info-panel { position: static; }
-  .location-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 680px) {
-  nav { padding: 0 20px; }
-  .nav-links { display: none; }
-  .container { padding: 0 20px; }
-  .hero-content { padding: 60px 20px; }
-  .services-grid, .doctors-grid, .reviews-grid { grid-template-columns: 1fr; }
-  .info-bar-grid { grid-template-columns: 1fr 1fr; }
-  footer { flex-direction: column; gap: 16px; text-align: center; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우울증 치료 클리닉 - 드래그 앤 노드 시스템</title>
+    <style>
+        :root {
+            --bg-color: #121213;
+            --text-color: #ececed;
+            --accent-color: #4ade80; 
+            --node-bg: #27272a;
+            --border-color: #3f3f46;
+            --line-inactive: #333;
+        }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+        }
+        header {
+            background: rgba(24, 24, 27, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px;
+            position: fixed;
+            top: 0; width: 100%; z-index: 1000;
+        }
+        nav { display: flex; gap: 10px; justify-content: center; }
+        nav button {
+            background: none; border: 1px solid var(--border-color);
+            padding: 8px 16px; border-radius: 4px;
+            color: #71717a; cursor: pointer; transition: 0.3s;
+            font-size: 0.85rem;
+        }
+        nav button.active {
+            background: var(--accent-color); color: #000; border-color: var(--accent-color);
+        }
+
+        .canvas-container {
+            width: 100vw; height: 100vh;
+            position: relative;
+            background-image: radial-gradient(#2a2a2b 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .page { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .page.active { display: block; }
+
+        /* 노드 스타일 */
+        .node {
+            position: absolute;
+            background: var(--node-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            width: 180px;
+            z-index: 10;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
+        .node-header {
+            background: #3f3f46; padding: 6px 10px; font-size: 0.7rem;
+            color: #d1d5db; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between;
+            cursor: move; /* 이동 가능 표시 */
+        }
+        .node-body { 
+            padding: 15px; text-align: center; font-size: 0.95rem; font-weight: 600; 
+            cursor: pointer; /* 클릭 시 연결/해제 */
+        }
+        
+        .node.connected { border-color: var(--accent-color); }
+        .node.connected .node-header { background: var(--accent-color); color: #000; }
+
+        /* SVG 연결선 */
+        svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+        path {
+            fill: none; stroke: var(--line-inactive);
+            stroke-width: 3; transition: stroke 0.3s;
+        }
+        path.active { stroke: var(--accent-color); stroke-dasharray: 8; animation: flow 1s linear infinite; }
+
+        @keyframes flow { to { stroke-dashoffset: -16; } }
+
+        .glass-card {
+            background: #1e1e1f; border: 1px solid var(--border-color);
+            padding: 2rem; border-radius: 12px; width: 400px;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+        textarea {
+            width: 100%; height: 150px; background: #121213; color: white;
+            border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; box-sizing: border-box;
+        }
+    </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a href="#" class="nav-logo">
-    <div class="nav-logo-icon">🏥</div>
-    <div>
-      <div class="nav-logo-text">유로케어 비뇨기과</div>
-      <span class="nav-logo-sub">UROCARE UROLOGY CLINIC</span>
-    </div>
-  </a>
-  <ul class="nav-links">
-    <li><a href="#services">진료과목</a></li>
-    <li><a href="#doctors">의료진</a></li>
-    <li><a href="#booking">예약</a></li>
-    <li><a href="#location">오시는 길</a></li>
-    <li><a href="#booking" class="nav-cta">온라인 예약</a></li>
-  </ul>
-</nav>
+<header>
+    <nav id="mainNav">
+        <button onclick="navTo('home')" class="active">Main</button>
+        <button onclick="navTo('diag')">Diagnosis</button>
+        <button onclick="navTo('routine')">Routine (Drag & Flow)</button>
+        <button onclick="navTo('diary')">Anonymous Diary</button>
+        <button onclick="navTo('kit')">Healing Kit</button>
+    </nav>
+</header>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg-pattern"></div>
-  <div class="hero-grid-lines"></div>
-  <div class="hero-content">
-    <div>
-      <div class="hero-badge"><span></span> 현재 예약 가능</div>
-      <h1 class="hero-title">
-        전문적이고<br>
-        <em>편안한 진료</em>로<br>
-        건강을 지킵니다
-      </h1>
-      <p class="hero-desc">
-        20년 이상의 임상 경험을 가진 전문의가 비뇨기 질환부터 전립선 건강, 성 건강까지 세심하고 체계적인 진료를 제공합니다. 쾌적하고 프라이버시가 보장된 환경에서 안심하고 진료받으세요.
-      </p>
-      <div class="hero-actions">
-        <a href="#booking" class="btn-primary">📅 온라인 예약하기</a>
-        <a href="tel:052-000-0000" class="btn-outline">📞 전화 상담</a>
-      </div>
-      <div class="hero-stats">
-        <div>
-          <div class="hero-stat-val">15,000+</div>
-          <div class="hero-stat-label">누적 환자 수</div>
+<div class="canvas-container">
+    <section id="home" class="page active">
+        <div class="glass-card">
+            <h2>우울증 치료 클리닉</h2>
+            <p style="color:#a1a1aa;">치료 받지 않는 비율 84%[cite: 10].<br>당신의 루틴을 노드로 설계하세요.</p>
         </div>
-        <div>
-          <div class="hero-stat-val">20년</div>
-          <div class="hero-stat-label">전문의 경력</div>
-        </div>
-        <div>
-          <div class="hero-stat-val">98%</div>
-          <div class="hero-stat-label">환자 만족도</div>
-        </div>
-      </div>
-    </div>
+    </section>
 
-    <!-- Quick booking widget -->
-    <div class="hero-booking-card">
-      <div class="booking-card-title">빠른 예약</div>
-      <div class="booking-card-sub">원하시는 날짜와 시간을 선택하세요</div>
-      <div class="form-group">
-        <label class="form-label">진료 과목</label>
-        <select class="form-select">
-          <option value="">선택해 주세요</option>
-          <option>전립선 질환</option>
-          <option>요로감염</option>
-          <option>결석 질환</option>
-          <option>성 건강 클리닉</option>
-          <option>남성 건강</option>
-          <option>건강검진</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">희망 날짜</label>
-          <input type="date" class="form-input" id="quickDate">
-        </div>
-        <div class="form-group">
-          <label class="form-label">희망 시간</label>
-          <select class="form-select">
-            <option>09:00</option>
-            <option>10:00</option>
-            <option>11:00</option>
-            <option>13:00</option>
-            <option>14:00</option>
-            <option>15:00</option>
-            <option>16:00</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">성함</label>
-        <input type="text" class="form-input" placeholder="홍길동">
-      </div>
-      <div class="form-group">
-        <label class="form-label">연락처</label>
-        <input type="tel" class="form-input" placeholder="010-0000-0000">
-      </div>
-      <button class="btn-book" onclick="quickBook()">예약 신청하기 →</button>
-    </div>
-  </div>
-</section>
+    <section id="diag" class="page">
+        <div class="glass-card"><h3>자가진단</h3><p>감정 키워드를 선택하세요[cite: 18].</p></div>
+    </section>
 
-<!-- INFO BAR -->
-<div class="info-bar">
-  <div class="container">
-    <div class="info-bar-grid">
-      <div class="info-bar-item">
-        <div class="info-bar-icon">🕐</div>
-        <div class="info-bar-label">진료 시간</div>
-        <div class="info-bar-value">
-          평일 <span class="highlight">09:00 – 18:00</span><br>
-          토요일 09:00 – 13:00
-        </div>
-      </div>
-      <div class="info-bar-item">
-        <div class="info-bar-icon">📞</div>
-        <div class="info-bar-label">전화 예약</div>
-        <div class="info-bar-value">
-          <span class="highlight">052-000-0000</span><br>
-          점심 12:30 – 13:30
-        </div>
-      </div>
-      <div class="info-bar-item">
-        <div class="info-bar-icon">🅿️</div>
-        <div class="info-bar-label">주차 안내</div>
-        <div class="info-bar-value">
-          건물 지하 <span class="highlight">무료 주차</span><br>
-          2시간 무료 제공
-        </div>
-      </div>
-      <div class="info-bar-item">
-        <div class="info-bar-icon">💳</div>
-        <div class="info-bar-label">진료비 안내</div>
-        <div class="info-bar-value">
-          건강보험 <span class="highlight">적용 가능</span><br>
-          실손보험 서류 발급
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SERVICES -->
-<section class="services-section" id="services">
-  <div class="container">
-    <div class="reveal">
-      <div class="section-badge">진료 과목</div>
-      <h2 class="section-title">전문적인 비뇨기과 진료</h2>
-      <p class="section-desc">다양한 비뇨기 질환을 최신 장비와 풍부한 임상 경험으로 정확하게 진단하고 치료합니다.</p>
-    </div>
-    <div class="services-grid">
-      <div class="service-card reveal">
-        <div class="service-icon" style="background:#e8f3fc;">🫁</div>
-        <div class="service-title">전립선 질환</div>
-        <p class="service-desc">전립선비대증, 전립선염, 전립선암 검사 및 치료. 최신 진단 장비를 이용한 정밀 검사와 개인 맞춤 치료를 제공합니다.</p>
-        <div class="service-tags">
-          <span class="service-tag">PSA 검사</span>
-          <span class="service-tag">초음파 진단</span>
-          <span class="service-tag">약물 치료</span>
-        </div>
-      </div>
-      <div class="service-card reveal">
-        <div class="service-icon" style="background:#e8f9f5;">🦠</div>
-        <div class="service-title">요로감염 / 방광염</div>
-        <p class="service-desc">방광염, 요도염, 신우신염 등 요로계 감염 질환의 신속한 진단 및 맞춤형 항생제 치료를 제공합니다.</p>
-        <div class="service-tags">
-          <span class="service-tag">소변 검사</span>
-          <span class="service-tag">균 배양</span>
-          <span class="service-tag">항생제 치료</span>
-        </div>
-      </div>
-      <div class="service-card reveal">
-        <div class="service-icon" style="background:#fff5e8;">🪨</div>
-        <div class="service-title">요로결석</div>
-        <p class="service-desc">신장·요관·방광 결석의 체외충격파 쇄석술(ESWL) 및 내시경 시술로 빠른 회복을 도와드립니다.</p>
-        <div class="service-tags">
-          <span class="service-tag">CT 진단</span>
-          <span class="service-tag">ESWL</span>
-          <span class="service-tag">내시경 제거</span>
-        </div>
-      </div>
-      <div class="service-card reveal">
-        <div class="service-icon" style="background:#f3e8fc;">💊</div>
-        <div class="service-title">성 건강 클리닉</div>
-        <p class="service-desc">발기부전, 조루, 성병 검사 및 치료. 완전한 프라이버시 보장과 함께 전문적이고 체계적인 진료를 제공합니다.</p>
-        <div class="service-tags">
-          <span class="service-tag">비밀 보장</span>
-          <span class="service-tag">성병 검사</span>
-          <span class="service-tag">약물 처방</span>
-        </div>
-      </div>
-      <div class="service-card reveal">
-        <div class="service-icon" style="background:#e8fce8;">🔬</div>
-        <div class="service-title">남성 건강검진</div>
-        <p class="service-desc">종합 남성 건강검진 패키지를 통해 비뇨기계 건강 상태를 체계적으로 평가하고 조기 발견 및 예방을 지원합니다.</p>
-        <div class="service-tags">
-          <span class="service-tag">호르몬 검사</span>
-          <span class="service-tag">초음파</span>
-          <span class="service-tag">혈액 검사</span>
-        </div>
-      </div>
-      <div class="service-card reveal">
-        <div class="service-icon" style="background:#fce8e8;">🩺</div>
-        <div class="service-title">소아 비뇨기과</div>
-        <p class="service-desc">포경수술, 야뇨증, 요로기형 등 소아·청소년 비뇨기 질환을 세심하게 진료합니다. 어린이를 위한 친절한 진료 환경을 제공합니다.</p>
-        <div class="service-tags">
-          <span class="service-tag">포경수술</span>
-          <span class="service-tag">야뇨증</span>
-          <span class="service-tag">요로기형</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- DOCTORS -->
-<section id="doctors" style="background:white; padding:96px 0;">
-  <div class="container">
-    <div class="reveal">
-      <div class="section-badge">의료진 소개</div>
-      <h2 class="section-title">경험 많은 전문의가<br>함께합니다</h2>
-    </div>
-    <div class="doctors-grid">
-      <div class="doctor-card reveal">
-        <div class="doctor-photo" style="background:linear-gradient(135deg,#e8f3fc,#c8e0f4);">👨‍⚕️</div>
-        <div class="doctor-info">
-          <div class="doctor-specialty">대표원장 · 비뇨의학과 전문의</div>
-          <div class="doctor-name">김태준 원장</div>
-          <ul class="doctor-career">
-            <li>서울대학교 의과대학 졸업</li>
-            <li>서울대학교병원 비뇨의학과 전공의</li>
-            <li>대한비뇨기과학회 정회원</li>
-            <li>전립선·요로결석 전문 클리닉 20년</li>
-          </ul>
-        </div>
-      </div>
-      <div class="doctor-card reveal">
-        <div class="doctor-photo" style="background:linear-gradient(135deg,#e8f9f5,#c8f0e8);">👩‍⚕️</div>
-        <div class="doctor-info">
-          <div class="doctor-specialty">부원장 · 비뇨의학과 전문의</div>
-          <div class="doctor-name">박서연 원장</div>
-          <ul class="doctor-career">
-            <li>연세대학교 의과대학 졸업</li>
-            <li>세브란스병원 비뇨의학과 전공의</li>
-            <li>여성 비뇨기과 전문 클리닉</li>
-            <li>과민성 방광 · 요실금 전문</li>
-          </ul>
-        </div>
-      </div>
-      <div class="doctor-card reveal">
-        <div class="doctor-photo" style="background:linear-gradient(135deg,#f3e8fc,#e4c8f4);">👨‍⚕️</div>
-        <div class="doctor-info">
-          <div class="doctor-specialty">비뇨의학과 전문의</div>
-          <div class="doctor-name">이민호 원장</div>
-          <ul class="doctor-career">
-            <li>울산대학교 의과대학 졸업</li>
-            <li>서울아산병원 비뇨의학과 전공의</li>
-            <li>남성 건강·성 클리닉 전문</li>
-            <li>로봇 수술 인증의</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FULL BOOKING SECTION -->
-<section class="booking-section" id="booking">
-  <div class="container">
-    <div class="reveal">
-      <div class="section-badge">온라인 예약</div>
-      <h2 class="section-title">편리하게 예약하세요</h2>
-      <p class="section-desc">24시간 온라인으로 예약 가능합니다. 예약 확인 문자를 발송해 드립니다.</p>
-    </div>
-
-    <div class="booking-layout">
-      <!-- Left: Info -->
-      <div class="booking-info-panel reveal">
-        <div class="booking-info-item">
-          <div class="booking-info-icon">✅</div>
-          <div>
-            <div class="booking-info-title">간편한 예약</div>
-            <div class="booking-info-text">몇 가지 정보만 입력하면 바로 예약 완료. 예약 후 확인 문자를 발송해 드립니다.</div>
-          </div>
-        </div>
-        <div class="booking-info-item">
-          <div class="booking-info-icon">🔒</div>
-          <div>
-            <div class="booking-info-title">개인정보 보호</div>
-            <div class="booking-info-text">모든 개인정보는 암호화되어 안전하게 처리되며, 진료 목적으로만 사용됩니다.</div>
-          </div>
-        </div>
-        <div class="booking-info-item">
-          <div class="booking-info-icon">📋</div>
-          <div>
-            <div class="booking-info-title">진료 준비사항</div>
-            <div class="booking-info-text">이전 검사 결과지, 복용 중인 약 목록을 지참하시면 더욱 정확한 진료가 가능합니다.</div>
-          </div>
-        </div>
-        <div class="booking-info-item">
-          <div class="booking-info-icon">🔄</div>
-          <div>
-            <div class="booking-info-title">예약 변경·취소</div>
-            <div class="booking-info-text">예약 변경 및 취소는 진료 24시간 전까지 전화(052-000-0000)로 가능합니다.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right: Booking form -->
-      <div class="booking-form-card reveal">
-        <!-- Step indicator -->
-        <div class="steps">
-          <div class="step active" id="stepInd1">
-            <div class="step-num">1</div>
-            <div class="step-label">증상 선택</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step" id="stepInd2">
-            <div class="step-num">2</div>
-            <div class="step-label">일정 선택</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step" id="stepInd3">
-            <div class="step-num">3</div>
-            <div class="step-label">정보 입력</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step" id="stepInd4">
-            <div class="step-num">4</div>
-            <div class="step-label">확인</div>
-          </div>
-        </div>
-
-        <!-- Step 1: Symptom -->
-        <div class="step-page active" id="page1">
-          <div class="booking-step-title">STEP 01</div>
-          <div class="booking-form-title">어떤 증상으로 오시나요?</div>
-          <div class="form-group">
-            <label class="form-label">진료 과목 *</label>
-            <select class="form-select" id="dept">
-              <option value="">선택해 주세요</option>
-              <option value="전립선 질환">전립선 질환</option>
-              <option value="요로감염·방광염">요로감염·방광염</option>
-              <option value="요로결석">요로결석</option>
-              <option value="성 건강 클리닉">성 건강 클리닉</option>
-              <option value="남성 건강검진">남성 건강검진</option>
-              <option value="소아 비뇨기과">소아 비뇨기과</option>
-              <option value="기타 진료">기타 진료</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">주요 증상 (복수 선택 가능)</label>
-            <div class="symptom-chips">
-              <button class="chip" onclick="toggleChip(this)">배뇨 통증</button>
-              <button class="chip" onclick="toggleChip(this)">잦은 소변</button>
-              <button class="chip" onclick="toggleChip(this)">혈뇨</button>
-              <button class="chip" onclick="toggleChip(this)">하복부 통증</button>
-              <button class="chip" onclick="toggleChip(this)">야간뇨</button>
-              <button class="chip" onclick="toggleChip(this)">소변 세기 약함</button>
-              <button class="chip" onclick="toggleChip(this)">요실금</button>
-              <button class="chip" onclick="toggleChip(this)">분비물 이상</button>
-              <button class="chip" onclick="toggleChip(this)">정기검진</button>
-              <button class="chip" onclick="toggleChip(this)">기타</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">담당 의사 선택</label>
-            <select class="form-select" id="doctor">
-              <option value="">상관없음 (자동 배정)</option>
-              <option value="김태준 원장">김태준 원장 — 전립선·결석 전문</option>
-              <option value="박서연 원장">박서연 원장 — 여성 비뇨기 전문</option>
-              <option value="이민호 원장">이민호 원장 — 남성 건강·성 클리닉</option>
-            </select>
-          </div>
-          <div class="form-nav">
-            <span></span>
-            <button class="btn-next" onclick="goStep(2)">다음 단계 →</button>
-          </div>
-        </div>
-
-        <!-- Step 2: Date/Time -->
-        <div class="step-page" id="page2">
-          <div class="booking-step-title">STEP 02</div>
-          <div class="booking-form-title">날짜와 시간을 선택하세요</div>
-
-          <div class="form-group">
-            <label class="form-label">날짜 선택</label>
-            <div class="calendar-wrapper">
-              <div class="calendar-header">
-                <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
-                <span id="calTitle" style="font-weight:600;font-size:15px;"></span>
-                <button class="cal-nav" onclick="changeMonth(1)">›</button>
-              </div>
-              <div class="calendar-grid">
-                <div class="cal-days-header">
-                  <div class="cal-day-name" style="color:#e55;">일</div>
-                  <div class="cal-day-name">월</div>
-                  <div class="cal-day-name">화</div>
-                  <div class="cal-day-name">수</div>
-                  <div class="cal-day-name">목</div>
-                  <div class="cal-day-name">금</div>
-                  <div class="cal-day-name" style="color:#5599ee;">토</div>
-                </div>
-                <div class="cal-dates" id="calDates"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group" id="timeGroup" style="display:none;">
-            <label class="form-label">시간 선택 <span style="color:var(--gray-400);font-weight:400;">(회색: 예약 마감)</span></label>
-            <div class="time-slots" id="timeSlots"></div>
-          </div>
-
-          <div class="form-nav">
-            <button class="btn-prev" onclick="goStep(1)">← 이전</button>
-            <button class="btn-next" onclick="goStep(3)">다음 단계 →</button>
-          </div>
-        </div>
-
-        <!-- Step 3: Patient Info -->
-        <div class="step-page" id="page3">
-          <div class="booking-step-title">STEP 03</div>
-          <div class="booking-form-title">환자 정보를 입력해 주세요</div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">성함 *</label>
-              <input type="text" class="form-input" id="patName" placeholder="홍길동">
-            </div>
-            <div class="form-group">
-              <label class="form-label">생년월일 *</label>
-              <input type="date" class="form-input" id="patBirth">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">연락처 *</label>
-              <input type="tel" class="form-input" id="patPhone" placeholder="010-0000-0000">
-            </div>
-            <div class="form-group">
-              <label class="form-label">성별</label>
-              <select class="form-select" id="patGender">
-                <option>남성</option>
-                <option>여성</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">초진·재진 여부</label>
-            <select class="form-select">
-              <option>초진 (처음 방문)</option>
-              <option>재진 (기존 환자)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">특이사항 / 복용 중인 약</label>
-            <textarea class="form-input" rows="3" style="resize:vertical;" placeholder="알레르기, 기저질환, 복용 중인 약이 있으시면 작성해 주세요."></textarea>
-          </div>
-          <div class="form-group">
-            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--gray-600);">
-              <input type="checkbox" id="privacyAgree" style="margin-top:2px;"> 
-              개인정보 수집·이용에 동의합니다 (진료 예약 목적, 필수)
-            </label>
-          </div>
-          <div class="form-nav">
-            <button class="btn-prev" onclick="goStep(2)">← 이전</button>
-            <button class="btn-next" onclick="goStep(4)">다음 단계 →</button>
-          </div>
-        </div>
-
-        <!-- Step 4: Confirm -->
-        <div class="step-page" id="page4">
-          <div class="booking-step-title">STEP 04</div>
-          <div class="booking-form-title">예약 내용을 확인해 주세요</div>
-          <div id="confirmSummary" style="background:var(--gray-100);border-radius:12px;padding:24px;margin-bottom:24px;font-size:14px;line-height:2;"></div>
-          <div style="background:var(--sky);border-radius:10px;padding:16px;font-size:13px;color:var(--blue);margin-bottom:24px;">
-            📱 예약 완료 후 입력하신 연락처로 <strong>확인 문자</strong>가 발송됩니다.
-          </div>
-          <div class="form-nav">
-            <button class="btn-prev" onclick="goStep(3)">← 이전</button>
-            <button class="btn-next" style="background:linear-gradient(135deg,var(--teal),var(--teal-light));" onclick="submitBooking()">예약 완료 ✓</button>
-          </div>
-        </div>
-
-        <!-- Success -->
-        <div class="success-panel" id="successPanel">
-          <div class="success-icon">✓</div>
-          <h3 style="font-size:22px;font-weight:700;color:var(--navy);margin-bottom:10px;">예약이 완료되었습니다!</h3>
-          <p style="color:var(--gray-600);font-size:14px;margin-bottom:24px;line-height:1.8;">예약 확인 문자를 발송해 드렸습니다.<br>진료 당일 10분 전까지 내원해 주시기 바랍니다.</p>
-          <div id="successInfo" style="background:var(--gray-100);border-radius:12px;padding:20px;font-size:14px;line-height:2;text-align:left;margin-bottom:24px;"></div>
-          <button class="btn-primary" onclick="resetBooking()" style="width:100%;justify-content:center;">새 예약하기</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- REVIEWS -->
-<section class="reviews-section" id="reviews">
-  <div class="container">
-    <div class="reveal" style="text-align:center;">
-      <div class="section-badge">환자 후기</div>
-      <h2 class="section-title">환자분들의 이야기</h2>
-    </div>
-    <div class="reviews-grid">
-      <div class="review-card reveal">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">전립선 비대증으로 오랫동안 고민하다 방문했는데, 김원장님이 친절하고 자세히 설명해 주셔서 치료에 대한 불안이 많이 해소됐습니다. 온라인 예약도 너무 편리해요.</p>
-        <div class="review-author">
-          <div class="review-avatar" style="background:linear-gradient(135deg,var(--blue),var(--blue-light));">김</div>
-          <div>
-            <div class="review-name">김○○ 님</div>
-            <div class="review-date">전립선 질환 · 2025.11</div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card reveal">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">요로결석으로 극심한 통증이 있었는데 신속하게 진단하고 체외충격파 시술로 빠르게 치료해 주셨습니다. 청결하고 프라이버시가 잘 지켜지는 환경이 인상적이었습니다.</p>
-        <div class="review-author">
-          <div class="review-avatar" style="background:linear-gradient(135deg,var(--teal),var(--teal-light));">박</div>
-          <div>
-            <div class="review-name">박○○ 님</div>
-            <div class="review-date">요로결석 · 2025.10</div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card reveal">
-        <div class="review-stars">★★★★☆</div>
-        <p class="review-text">남성 건강검진 패키지로 방문했습니다. 꼼꼼한 검사와 결과 설명이 만족스러웠고, 이민호 원장님께서 걱정스러운 부분을 모두 상세히 설명해 주셨습니다.</p>
-        <div class="review-author">
-          <div class="review-avatar" style="background:linear-gradient(135deg,#f3e8fc,#c8a0e0);color:var(--navy);">이</div>
-          <div>
-            <div class="review-name">이○○ 님</div>
-            <div class="review-date">남성 건강검진 · 2025.09</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- LOCATION -->
-<section class="location-section" id="location">
-  <div class="container">
-    <div class="reveal">
-      <div class="section-badge" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);">오시는 길</div>
-      <h2 class="section-title" style="color:white;">찾아오시는 방법</h2>
-    </div>
-    <div class="location-grid">
-      <div class="location-map reveal">
-        <svg viewBox="0 0 500 320" class="map-svg" xmlns="http://www.w3.org/2000/svg">
-          <!-- Roads -->
-          <rect x="0" y="140" width="500" height="20" fill="rgba(255,255,255,0.08)" rx="2"/>
-          <rect x="220" y="0" width="20" height="320" fill="rgba(255,255,255,0.08)" rx="2"/>
-          <rect x="0" y="220" width="500" height="12" fill="rgba(255,255,255,0.05)"/>
-          <rect x="150" y="0" width="12" height="320" fill="rgba(255,255,255,0.05)"/>
-          <rect x="330" y="0" width="12" height="320" fill="rgba(255,255,255,0.05)"/>
-          <!-- Blocks -->
-          <rect x="30" y="30" width="100" height="90" rx="6" fill="rgba(255,255,255,0.04)"/>
-          <rect x="175" y="30" width="25" height="90" rx="4" fill="rgba(255,255,255,0.03)"/>
-          <rect x="265" y="30" width="50" height="90" rx="4" fill="rgba(255,255,255,0.03)"/>
-          <rect x="355" y="30" width="110" height="90" rx="6" fill="rgba(255,255,255,0.04)"/>
-          <rect x="30" y="178" width="90" height="110" rx="6" fill="rgba(255,255,255,0.04)"/>
-          <rect x="265" y="178" width="100" height="110" rx="6" fill="rgba(255,255,255,0.04)"/>
-          <rect x="380" y="178" width="90" height="110" rx="6" fill="rgba(255,255,255,0.04)"/>
-          <!-- Clinic marker -->
-          <circle cx="230" cy="150" r="22" fill="rgba(26,95,168,0.4)" stroke="rgba(45,125,210,0.6)" stroke-width="2"/>
-          <circle cx="230" cy="150" r="14" fill="#1a5fa8"/>
-          <text x="230" y="155" text-anchor="middle" font-size="14" fill="white">+</text>
-          <!-- Pulse ring -->
-          <circle cx="230" cy="150" r="30" fill="none" stroke="rgba(26,95,168,0.3)" stroke-width="2">
-            <animate attributeName="r" values="22;40" dur="2s" repeatCount="indefinite"/>
-            <animate attributeName="opacity" values="0.5;0" dur="2s" repeatCount="indefinite"/>
-          </circle>
-          <!-- Labels -->
-          <text x="230" y="195" text-anchor="middle" font-size="11" fill="white" font-weight="bold">유로케어 비뇨기과</text>
-          <text x="60" y="75" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.3)">울산역</text>
-          <text x="400" y="75" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.3)">울산대병원</text>
-          <!-- Road labels -->
-          <text x="380" y="136" font-size="9" fill="rgba(255,255,255,0.3)">삼산로</text>
-          <text x="228" y="100" font-size="9" fill="rgba(255,255,255,0.3)" transform="rotate(90,228,100)">중앙로</text>
+    <section id="routine" class="page">
+        <svg id="svg-canvas">
+            <path id="line1" d="" />
+            <path id="line2" d="" />
+            <path id="line3" d="" />
         </svg>
-      </div>
-      <div class="reveal">
-        <div class="location-info-item">
-          <div class="loc-icon">📍</div>
-          <div>
-            <div class="loc-title">주소</div>
-            <div class="loc-val">울산광역시 남구 삼산로 123<br>메디컬빌딩 5층</div>
-          </div>
-        </div>
-        <div class="location-info-item">
-          <div class="loc-icon">🚇</div>
-          <div>
-            <div class="loc-title">대중교통</div>
-            <div class="loc-val">울산역에서 버스 102, 1127번 탑승<br>삼산동 정류장 하차 후 도보 3분</div>
-          </div>
-        </div>
-        <div class="location-info-item">
-          <div class="loc-icon">🚗</div>
-          <div>
-            <div class="loc-title">자가용</div>
-            <div class="loc-val">건물 지하 주차장 이용<br>방문 시 2시간 무료 주차 도장 제공</div>
-          </div>
-        </div>
-        <div class="location-info-item">
-          <div class="loc-icon">📞</div>
-          <div>
-            <div class="loc-title">전화 / 팩스</div>
-            <div class="loc-val">052-000-0000 / 팩스 052-000-0001</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- FOOTER -->
-<footer>
-  <div>
-    <div class="footer-logo">유로케어 비뇨기과의원</div>
-    <div>© 2025 UROCare Urology Clinic. All rights reserved.</div>
-  </div>
-  <div style="text-align:right;line-height:2;">
-    <div>사업자등록번호: 123-45-67890</div>
-    <div>대표원장: 김태준 | 052-000-0000</div>
-  </div>
-</footer>
+        <div class="node" id="node1" style="top:200px; left:100px;">
+            <div class="node-header" onmousedown="startDrag(event, 'node1')"><span>START</span><span>⁝⁝</span></div>
+            <div class="node-body" onclick="toggleConnect(1)">6시 기상 [cite: 39]</div>
+        </div>
 
-<!-- Success Modal -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div style="font-size:56px;margin-bottom:16px;">🎉</div>
-    <h3 style="font-size:22px;font-weight:700;color:var(--navy);margin-bottom:10px;">예약이 완료되었습니다!</h3>
-    <p style="color:var(--gray-600);font-size:14px;line-height:1.8;margin-bottom:28px;">확인 문자가 곧 발송됩니다.<br>진료 당일 10분 전까지 내원해 주시기 바랍니다.</p>
-    <button class="btn-primary" style="width:100%;justify-content:center;" onclick="closeModal()">확인</button>
-  </div>
+        <div class="node" id="node2" style="top:200px; left:400px;">
+            <div class="node-header" onmousedown="startDrag(event, 'node2')"><span>FLOW</span><span>⁝⁝</span></div>
+            <div class="node-body" onclick="toggleConnect(2)">출근 [cite: 40]</div>
+        </div>
+
+        <div class="node" id="node3" style="top:400px; left:700px;">
+            <div class="node-header" onmousedown="startDrag(event, 'node3')"><span>FLOW</span><span>⁝⁝</span></div>
+            <div class="node-body" onclick="toggleConnect(3)">퇴근 후 운동 [cite: 41]</div>
+        </div>
+
+        <div class="node" id="node4" style="top:200px; left:1000px;">
+            <div class="node-header" onmousedown="startDrag(event, 'node4')"><span>END</span><span>⁝⁝</span></div>
+            <div class="node-body" onclick="toggleConnect(4)">퇴근 [cite: 42]</div>
+        </div>
+    </section>
+
+    <section id="diary" class="page">
+        <div class="glass-card">
+            <h3>익명 일기 공유 [cite: 35]</h3>
+            <textarea placeholder="해방감과 유대감을 느껴보세요 [cite: 34, 36]"></textarea>
+        </div>
+    </section>
+
+    <section id="kit" class="page">
+        <div class="glass-card" style="text-align:center"><h3>힐링 키트 [cite: 33]</h3><div style="font-size:3rem">🎁</div></div>
+    </section>
 </div>
 
 <script>
-// ── Calendar ──
-let curYear, curMonth, selectedDate = null, selectedTime = null;
+    let draggingNode = null;
+    let offset = { x: 0, y: 0 };
 
-const today = new Date();
-curYear = today.getFullYear();
-curMonth = today.getMonth();
-
-function renderCal() {
-  const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-  document.getElementById('calTitle').textContent = `${curYear}년 ${months[curMonth]}`;
-  const grid = document.getElementById('calDates');
-  grid.innerHTML = '';
-  const first = new Date(curYear, curMonth, 1).getDay();
-  const daysInMonth = new Date(curYear, curMonth+1, 0).getDate();
-  // Empty cells
-  for (let i=0; i<first; i++) {
-    const el = document.createElement('div');
-    el.classList.add('cal-date','empty');
-    grid.appendChild(el);
-  }
-  for (let d=1; d<=daysInMonth; d++) {
-    const el = document.createElement('button');
-    el.classList.add('cal-date');
-    el.textContent = d;
-    const dt = new Date(curYear, curMonth, d);
-    const isPast = dt < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const isSun = dt.getDay() === 0;
-    if (isPast || isSun) { el.classList.add('disabled'); }
-    else {
-      if (dt.toDateString() === today.toDateString()) el.classList.add('today');
-      const key = `${curYear}-${curMonth}-${d}`;
-      if (selectedDate === key) el.classList.add('selected');
-      el.addEventListener('click', () => selectDate(d, key, el));
+    // 페이지 전환
+    function navTo(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        document.querySelectorAll('#mainNav button').forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        if(pageId === 'routine') updateAllLines();
     }
-    grid.appendChild(el);
-  }
-}
 
-function selectDate(d, key, el) {
-  selectedDate = key;
-  document.querySelectorAll('.cal-date').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  renderTimeSlots(d);
-  document.getElementById('timeGroup').style.display = 'block';
-}
-
-function renderTimeSlots(day) {
-  const full = [0,3,5]; // indices of full slots (random demo)
-  const times = ['09:00','09:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','16:00'];
-  const container = document.getElementById('timeSlots');
-  container.innerHTML = '';
-  times.forEach((t, i) => {
-    const btn = document.createElement('button');
-    btn.classList.add('time-slot');
-    btn.textContent = t;
-    if (full.includes(i)) {
-      btn.classList.add('full');
-      btn.textContent = t + '\n마감';
-      btn.style.whiteSpace = 'pre';
-      btn.style.lineHeight = '1.3';
-    } else {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedTime = t;
-      });
+    // 드래그 시작
+    function startDrag(e, id) {
+        draggingNode = document.getElementById(id);
+        const rect = draggingNode.getBoundingClientRect();
+        offset.x = e.clientX - rect.left;
+        offset.y = e.clientY - rect.top;
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', stopDrag);
     }
-    container.appendChild(btn);
-  });
-}
 
-function changeMonth(dir) {
-  curMonth += dir;
-  if (curMonth < 0) { curMonth = 11; curYear--; }
-  if (curMonth > 11) { curMonth = 0; curYear++; }
-  renderCal();
-}
+    function onDrag(e) {
+        if (!draggingNode) return;
+        draggingNode.style.left = (e.clientX - offset.x) + 'px';
+        draggingNode.style.top = (e.clientY - offset.y) + 'px';
+        updateAllLines();
+    }
 
-// ── Step navigation ──
-let currentStep = 1;
+    function stopDrag() {
+        draggingNode = null;
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', stopDrag);
+    }
 
-function goStep(n) {
-  // Validation
-  if (n === 3 && currentStep === 2 && !selectedDate) {
-    alert('날짜를 선택해 주세요.'); return;
-  }
-  if (n === 3 && currentStep === 2 && !selectedTime) {
-    alert('시간을 선택해 주세요.'); return;
-  }
-  if (n === 4 && currentStep === 3) {
-    if (!document.getElementById('patName').value) { alert('성함을 입력해 주세요.'); return; }
-    if (!document.getElementById('patPhone').value) { alert('연락처를 입력해 주세요.'); return; }
-    if (!document.getElementById('privacyAgree').checked) { alert('개인정보 수집·이용에 동의해 주세요.'); return; }
-  }
-  if (n === 4) buildSummary();
-  currentStep = n;
-  document.querySelectorAll('.step-page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page'+n).classList.add('active');
-  // Update step indicators
-  for (let i=1; i<=4; i++) {
-    const el = document.getElementById('stepInd'+i);
-    el.classList.remove('active','done');
-    if (i < n) el.classList.add('done');
-    if (i === n) el.classList.add('active');
-  }
-  // Replace check mark for done steps
-  document.querySelectorAll('.step.done .step-num').forEach(el => {
-    if (!el.dataset.original) el.dataset.original = el.textContent;
-    el.textContent = '✓';
-  });
-}
+    // 노드 연결선 업데이트
+    function updateAllLines() {
+        drawCurve('node1', 'node2', 'line1');
+        drawCurve('node2', 'node3', 'line2');
+        drawCurve('node3', 'node4', 'line3');
+    }
 
-function buildSummary() {
-  const dept = document.getElementById('dept').value || '미선택';
-  const doctor = document.getElementById('doctor').value || '자동 배정';
-  const name = document.getElementById('patName').value || '-';
-  const phone = document.getElementById('patPhone').value || '-';
-  const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-  const dateStr = selectedDate
-    ? (() => { const [y,m,d] = selectedDate.split('-'); return `${y}년 ${months[parseInt(m)]} ${d}일`; })()
-    : '미선택';
-  document.getElementById('confirmSummary').innerHTML = `
-    <table style="width:100%;border-collapse:collapse;">
-      <tr><td style="color:var(--gray-400);font-size:12px;padding:4px 0;width:100px;">진료 과목</td><td style="font-weight:600;">${dept}</td></tr>
-      <tr><td style="color:var(--gray-400);font-size:12px;padding:4px 0;">담당 의사</td><td style="font-weight:600;">${doctor}</td></tr>
-      <tr><td style="color:var(--gray-400);font-size:12px;padding:4px 0;">예약 일시</td><td style="font-weight:600;color:var(--blue);">${dateStr} ${selectedTime || ''}</td></tr>
-      <tr><td style="color:var(--gray-400);font-size:12px;padding:4px 0;">성함</td><td style="font-weight:600;">${name}</td></tr>
-      <tr><td style="color:var(--gray-400);font-size:12px;padding:4px 0;">연락처</td><td style="font-weight:600;">${phone}</td></tr>
-    </table>
-  `;
-}
+    function drawCurve(startId, endId, lineId) {
+        const start = document.getElementById(startId).getBoundingClientRect();
+        const end = document.getElementById(endId).getBoundingClientRect();
+        const path = document.getElementById(lineId);
 
-function submitBooking() {
-  document.querySelectorAll('.step-page').forEach(p => p.classList.remove('active'));
-  document.getElementById('successPanel').style.display = 'block';
-  document.getElementById('modalOverlay').classList.add('open');
-}
+        const x1 = start.left + start.width;
+        const y1 = start.top + start.height / 2;
+        const x2 = end.left;
+        const y2 = end.top + end.height / 2;
 
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-}
+        const cp1x = x1 + (x2 - x1) / 2;
+        const cp2x = x1 + (x2 - x1) / 2;
 
-function resetBooking() {
-  selectedDate = null; selectedTime = null; currentStep = 1;
-  document.getElementById('successPanel').style.display = 'none';
-  document.querySelectorAll('.step-page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page1').classList.add('active');
-  for (let i=1; i<=4; i++) {
-    const el = document.getElementById('stepInd'+i);
-    el.classList.remove('active','done');
-    const num = el.querySelector('.step-num');
-    if (num.dataset.original) num.textContent = num.dataset.original;
-  }
-  document.getElementById('stepInd1').classList.add('active');
-  renderCal();
-}
+        path.setAttribute('d', `M ${x1} ${y1} C ${cp1x} ${y1}, ${cp2x} ${y2}, ${x2} ${y2}`);
+    }
 
-function quickBook() {
-  alert('빠른 예약 신청이 완료되었습니다!\n담당자가 확인 후 연락드리겠습니다.');
-}
+    function toggleConnect(index) {
+        const node = document.getElementById('node' + index);
+        node.classList.toggle('connected');
+        const line = document.getElementById('line' + (index-1));
+        if(line) line.classList.toggle('active');
+    }
 
-function toggleChip(el) {
-  el.classList.toggle('selected');
-}
-
-// ── Scroll Reveal ──
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-// Set min date for quick booking
-const qd = document.getElementById('quickDate');
-if (qd) qd.min = today.toISOString().split('T')[0];
-
-// Init calendar
-renderCal();
+    // 초기 선 그리기
+    window.onload = updateAllLines;
+    window.onresize = updateAllLines;
 </script>
+
 </body>
 </html>
