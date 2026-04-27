@@ -6,12 +6,12 @@
     <title>우울증 치료 클리닉 - 드래그 앤 노드 시스템</title>
     <style>
         :root {
-            --bg-color: #121213;
-            --text-color: #ececed;
-            --accent-color: #4ade80; 
-            --node-bg: #27272a;
-            --border-color: #3f3f46;
-            --line-inactive: #333;
+            --bg-color: #fdfaf6;
+            --text-color: #433422;
+            --accent-color: #f39c12;
+            --node-bg: #ffffff;
+            --border-color: #e0d7c6;
+            --line-inactive: #dcd0bc;
         }
         body {
             font-family: 'Pretendard', sans-serif;
@@ -20,9 +20,10 @@
             margin: 0;
             overflow: hidden;
             user-select: none;
+            transition: background-color 1.5s ease-in-out, color 1.0s ease-in-out;
         }
         header {
-            background: rgba(24, 24, 27, 0.9);
+            background: rgba(253, 250, 246, 0.9);
             backdrop-filter: blur(8px);
             border-bottom: 1px solid var(--border-color);
             padding: 10px;
@@ -33,7 +34,7 @@
         nav button {
             background: none; border: 1px solid var(--border-color);
             padding: 8px 16px; border-radius: 4px;
-            color: #71717a; cursor: pointer; transition: 0.3s;
+            color: #8d7b68; cursor: pointer; transition: 0.3s;
             font-size: 0.85rem;
         }
         nav button.active {
@@ -43,8 +44,6 @@
         .canvas-container {
             width: 100vw; height: 100vh;
             position: relative;
-            background-image: radial-gradient(#2a2a2b 1px, transparent 1px);
-            background-size: 40px 40px;
         }
 
         .page { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
@@ -58,41 +57,440 @@
             border-radius: 6px;
             width: 180px;
             z-index: 10;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(67, 52, 34, 0.1);
+            min-height: 60px;
         }
+        .socket {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--border-color);
+            border: 2px solid var(--node-bg);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: crosshair;
+            z-index: 20;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .socket:hover { background: var(--accent-color); transform: translateY(-50%) scale(1.3); }
+        .socket-left { left: -6px; }
+        .socket-right { right: -6px; }
+
         .node-header {
-            background: #3f3f46; padding: 6px 10px; font-size: 0.7rem;
-            color: #d1d5db; border-bottom: 1px solid var(--border-color);
+            background: #fdf1e6; padding: 6px 10px; font-size: 0.7rem;
+            color: #8d7b68; border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between;
-            cursor: move; /* 이동 가능 표시 */
+            cursor: move;
         }
         .node-body { 
             padding: 15px; text-align: center; font-size: 0.95rem; font-weight: 600; 
-            cursor: pointer; /* 클릭 시 연결/해제 */
+            cursor: pointer;
         }
         
         .node.connected { border-color: var(--accent-color); }
         .node.connected .node-header { background: var(--accent-color); color: #000; }
+        .node.green-node.connected { border-color: #27ae60; border-width: 2px; }
+        .node.green-node.connected .node-header { background: #27ae60; color: #fff; }
 
-        /* SVG 연결선 */
         svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         path {
             fill: none; stroke: var(--line-inactive);
             stroke-width: 3; transition: stroke 0.3s;
         }
         path.active { stroke: var(--accent-color); stroke-dasharray: 8; animation: flow 1s linear infinite; }
+        path.green-line { stroke: #27ae60 !important; }
+        path.blue-line { stroke: #3498db !important; }
 
         @keyframes flow { to { stroke-dashoffset: -16; } }
 
         .glass-card {
-            background: #1e1e1f; border: 1px solid var(--border-color);
-            padding: 2rem; border-radius: 12px; width: 400px;
+            background: #ffffff; 
+            padding: 2.5rem 2rem; border-radius: 24px; width: 400px;
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            box-shadow: 0 20px 60px rgba(67, 52, 34, 0.08); 
+            border: none;
         }
-        textarea {
-            width: 100%; height: 150px; background: #121213; color: white;
-            border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; box-sizing: border-box;
+
+        /* ===== 자가진단 카드 시스템 ===== */
+        #diag {
+            overflow: hidden;
         }
+        #diag-root {
+            width: 100%;
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 60px;
+            box-sizing: border-box;
+        }
+        #progress-area {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+        #progress-label {
+            font-size: 0.8rem;
+            color: #8d7b68;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        #progress-bar-wrap {
+            width: 280px;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        #progress-bar-fill {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+            width: 6.25%;
+        }
+        #cards-viewport {
+            width: 100%;
+            overflow: visible;
+            position: relative;
+            height: 500px;
+            flex-shrink: 0;
+        }
+        #cards-track {
+            display: flex;
+            gap: 32px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .quiz-card {
+            width: 380px;
+            min-height: 460px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px 24px 80px;
+            flex-shrink: 0;
+            position: relative;
+            transition: filter 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+            cursor: pointer;
+            filter: brightness(0.72);
+            transform: scale(0.93);
+            box-shadow: none;
+            box-sizing: border-box;
+        }
+        .quiz-card.active {
+            filter: brightness(1);
+            transform: scale(1);
+            box-shadow: 0 12px 40px rgba(67,52,34,0.12);
+            cursor: default;
+        }
+        .card-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #8d7b68;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--border-color);
+            transition: background 0.3s;
+        }
+        .quiz-card.active .card-dot { background: var(--accent-color); }
+        .quiz-q {
+            margin-bottom: 14px;
+            border-bottom: 1px solid #f0ece4;
+            padding-bottom: 14px;
+        }
+        .quiz-q:last-of-type { border-bottom: none; }
+        .q-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .q-options {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .q-opt {
+            font-size: 0.7rem;
+            padding: 4px 9px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            cursor: pointer;
+            background: #fdfaf6;
+            color: #8d7b68;
+            transition: all 0.2s;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .q-opt:hover { border-color: var(--accent-color); color: var(--text-color); }
+        .q-opt.selected { background: var(--accent-color); border-color: var(--accent-color); color: #fff; font-weight: 600; }
+        .card-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 24px;
+            right: 24px;
+            display: flex;
+            gap: 10px;
+        }
+        .btn-nav {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #fdf1e6;
+            color: var(--text-color);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-nav:hover { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+        .btn-nav.primary { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+        .btn-nav.primary:hover { background: #d35400; border-color: #d35400; }
+        .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-nav:disabled:hover { background: #fdf1e6; color: var(--text-color); border-color: var(--border-color); }
+
+        /* 결과 화면 */
+        #result-screen {
+            display: none;
+            width: 100%;
+            padding: 80px 20px 30px;
+            text-align: center;
+            animation: fadeUp 0.5s ease;
+            overflow-y: auto;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        #result-card {
+            max-width: 460px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 32px;
+            box-shadow: 0 12px 40px rgba(67,52,34,0.1);
+        }
+        #res-badge {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        #res-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; }
+        #res-score { font-size: 0.8rem; color: #8d7b68; margin-bottom: 8px; }
+        #res-desc { font-size: 0.9rem; color: #8d7b68; line-height: 1.7; margin-bottom: 28px; }
+        .res-btn-group { display: flex; flex-direction: column; gap: 10px; }
+        .btn-res {
+            padding: 13px 20px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+        }
+        .btn-res.routine { background: #27ae60; color: #fff; }
+        .btn-res.routine:hover { background: #219150; }
+        .btn-res.reset { background: #fdf1e6; color: var(--text-color); border: 1px solid var(--border-color); }
+        .btn-res.reset:hover { background: var(--border-color); }
+        .level-1 { color: #27ae60; }
+        .level-2 { color: #d4ac0d; }
+        .level-3 { color: #e67e22; }
+        .level-4 { color: #c0392b; font-weight: 800; }
+        /* ===== 자가진단 끝 ===== */
+
+        /* 노드 추가 버튼 */
+        .add-node-btn {
+            position: absolute; bottom: 40px; left: calc(50% - 450px);
+            padding: 12px 28px; background: var(--accent-color);
+            border: none; border-radius: 30px; font-weight: 800; font-size: 1rem;
+            cursor: pointer; color: white; z-index: 1100;
+            box-shadow: 0 4px 20px rgba(243, 156, 18, 0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .add-node-btn:hover { transform: scale(1.05); background: #d35400; }
+
+        .add-node-green-btn {
+            position: absolute; bottom: 40px; left: calc(50% - 150px);
+            padding: 12px 28px; background: #27ae60;
+            border: none; border-radius: 30px; font-weight: 800; font-size: 1rem;
+            cursor: pointer; color: white; z-index: 1100;
+            box-shadow: 0 4px 20px rgba(39, 174, 96, 0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .add-node-green-btn:hover { transform: scale(1.05); background: #219150; }
+
+        .add-sticky-btn {
+            position: absolute; bottom: 40px; left: calc(50% + 150px);
+            padding: 12px 28px; background: #f1c40f;
+            border: none; border-radius: 30px; font-weight: 800; font-size: 1rem;
+            cursor: pointer; color: #5d4037; z-index: 1100;
+            box-shadow: 0 4px 20px rgba(241, 196, 15, 0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .add-sticky-btn:hover { transform: scale(1.05); background: #f39c12; }
+
+        .add-node-blue-btn {
+            position: absolute; bottom: 40px; left: calc(50% + 450px);
+            padding: 12px 28px; background: #3498db;
+            border: none; border-radius: 30px; font-weight: 800; font-size: 1rem;
+            cursor: pointer; color: white; z-index: 1100;
+            box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .add-node-blue-btn:hover { transform: scale(1.05); background: #2980b9; }
+
+        /* 스티커 메모 */
+        .sticky-note {
+            position: absolute; background: #fff9c4; border: 1px solid #fbc02d;
+            padding: 15px; width: 160px; height: 120px; min-width: 100px; min-height: 80px;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.1); z-index: 8; cursor: move;
+            border-radius: 2px; resize: both; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .sticky-note-body {
+            font-family: 'Pretendard', sans-serif; font-size: 0.95rem; font-weight: 600;
+            text-align: center; color: #5d4037; outline: none; flex: 1; overflow-y: auto;
+            cursor: text; user-select: text;
+        }
+
+        /* 초록색 노드 */
+        .node.green-node { border-color: #27ae60; }
+        .node.green-node .node-header { background: #e8f5e9; color: #1e8449; }
+        .node.green-node .socket:hover { background: #27ae60; }
+        .node.green-node.connected .socket { background: #27ae60; border-color: #fff; }
+        .node.green-node .node-body:focus { outline: 1px solid #27ae60; }
+        .node.green-node.selecting { border-color: #27ae60; box-shadow: 0 0 15px #27ae60; }
+
+        /* 파란색 장소 노드 */
+        .node.blue-node { border-color: #3498db; width: 220px; }
+        .node.blue-node .node-header { background: #ebf5fb; color: #21618c; }
+        .node.blue-node.connected { border-color: #3498db; border-width: 2px; }
+        .node.blue-node.connected .node-header { background: #3498db; color: #fff; }
+        .node.blue-node .node-body:focus { outline: 1px solid #3498db; }
+        .map-iframe { width: 100%; height: 120px; border: 0; border-radius: 4px; margin-top: 8px; }
+
+        .btn-delete { color: #f87171; cursor: pointer; font-weight: bold; margin-left: 8px; transition: color 0.2s; }
+        .btn-delete:hover { color: #ef4444; }
+        .btn-disconnect { color: #8d7b68; cursor: pointer; font-weight: bold; margin-left: 8px; transition: color 0.2s; font-size: 0.8rem; }
+        .btn-disconnect:hover { color: var(--accent-color); }
+        .node-body:focus { outline: 1px solid var(--accent-color); background: rgba(255,255,255,0.05); border-radius: 0 0 6px 6px; user-select: text; }
+        .node.selecting { border: 2px dashed var(--accent-color); box-shadow: 0 0 15px var(--accent-color); z-index: 100; }
+
+        /* 줌 레이어 */
+        #zoom-layer { width: 100%; height: 100%; transform-origin: 0 0; transition: transform 0.1s ease-out; }
+        
+        /* 메인 페이지 */
+        #home { overflow-y: auto; height: 100vh; position: relative; scroll-behavior: smooth; }
+        .home-content { display: flex; flex-direction: column; align-items: center; padding-top: 25vh; padding-bottom: 10vh; gap: 200px; }
+
+        /* 시간 조절기 */
+        .time-picker-container {
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+            background: rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 20px;
+            backdrop-filter: blur(10px); border: 1px solid var(--border-color);
+        }
+        .semi-circle {
+            width: 300px; height: 150px; border: 4px solid var(--border-color);
+            border-bottom: none; border-radius: 150px 150px 0 0; position: relative;
+            margin: 50px 0; background: linear-gradient(to right, #ffcc8b, #fdfaf6, #2c3e50);
+            opacity: 0.8; cursor: pointer;
+        }
+        .time-indicator {
+            position: absolute; bottom: 0; left: 50%; width: 4px; height: 140px;
+            background: var(--text-color); transform-origin: bottom center;
+            transform: translateX(-50%) rotate(-90deg); transition: transform 0.1s ease-out;
+        }
+        .moon-icon { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; transition: opacity 0.3s ease; pointer-events: none; }
+        .sun-icon { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; transition: opacity 0.3s ease; pointer-events: none; }
+        .time-label { display: flex; justify-content: space-between; width: 320px; font-size: 0.8rem; color: #8d7b68; font-weight: bold; }
+        .scroll-hint { font-size: 0.75rem; color: #8d7b68; margin-top: 10px; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        /* 날씨 */
+        #weather-effect { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2000; }
+        .weather-ctrl { margin-top: 20px; display: flex; gap: 8px; justify-content: center; }
+        .weather-btn { padding: 6px 12px; font-size: 0.75rem; border: 1px solid var(--border-color); background: rgba(255,255,255,0.8); cursor: pointer; border-radius: 20px; transition: 0.2s; }
+        .weather-btn:hover { background: var(--bg-color); border-color: var(--accent-color); }
+
+        /* 약 관리 */
+        #meds { background: var(--bg-color); overflow: hidden; position: relative; }
+        .pill-tray {
+            position: absolute; bottom: -540px; left: 50%; transform: translateX(-50%);
+            width: 700px; height: 500px; background: #e0e0e0; border: 6px solid #bdbdbd;
+            box-shadow: inset 2px 2px 5px rgba(255,255,255,0.7), 0 -10px 30px rgba(0,0,0,0.3);
+            border-radius: 12px 12px 0 0; display: grid; grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(4, 1fr); gap: 10px; padding: 20px;
+            transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 500;
+        }
+        .pill-tray.open { bottom: 0; }
+        .pill-slot { background: #f5f5f5; border-radius: 10px; border: 3px solid #bdbdbd; box-shadow: inset 4px 4px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; position: relative; }
+        .pill-item {
+            cursor: grab; display: flex; align-items: center; justify-content: center;
+            box-shadow: inset -4px -4px 10px rgba(0,0,0,0.4), inset 4px 4px 10px rgba(255,255,255,0.7), 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.2s; position: relative; z-index: 100; border: 1px solid rgba(0,0,0,0.1);
+        }
+        .pill-item:hover { transform: scale(1.15); }
+        .pill-item:active { cursor: grabbing; }
+        .pill-shadow { position: absolute; background: rgba(0,0,0,0.4); filter: blur(8px); pointer-events: none; z-index: 40; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease; transform: scale(0.8); }
+        .pill-item.capsule { width: 75px; height: 32px; border-radius: 20px; }
+        .pill-item.round { width: 48px; height: 48px; border-radius: 50%; }
+        .pill-item.oval { width: 68px; height: 42px; border-radius: 50% / 50%; }
+        .pill-item.square { width: 42px; height: 42px; border-radius: 10px; }
+        .pill-item::after { content: ''; position: absolute; top: 12%; left: 12%; width: 20%; height: 20%; background: rgba(255,255,255,0.8); border-radius: 50%; filter: blur(1px); }
+        .pill-item.capsule::before { content: ''; position: absolute; left: 0; top: 0; width: 50%; height: 100%; background: rgba(0,0,0,0.15); border-radius: 20px 0 0 20px; }
+        .pill-label { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); color: #111; font-size: 0.7rem; font-weight: 700; text-align: center; background: rgba(255,255,255,0.8); padding: 2px 8px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); white-space: nowrap; line-height: 1.1; pointer-events: none; }
+        .btn-tray-toggle { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 30px; background: var(--accent-color); color: white; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; z-index: 600; box-shadow: 0 4px 15px rgba(243,156,18,0.4); }
+        .btn-refill { position: absolute; bottom: 20px; left: calc(50% + 150px); padding: 10px 30px; background: #2ecc71; color: white; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; z-index: 600; box-shadow: 0 4px 15px rgba(46,204,113,0.4); transition: background 0.2s; }
+        .btn-refill:hover { background: #27ae60; }
+
+        /* 약 정보 모달 */
+        .med-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 3000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .med-modal-overlay.active { opacity: 1; visibility: visible; }
+        .med-modal { background: #fdfaf6; padding: 35px; border-radius: 20px; max-width: 350px; width: 85%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid var(--border-color); transform: scale(0.7); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .med-modal-overlay.active .med-modal { transform: scale(1); }
+        .med-modal h3 { margin-top: 0; color: #3e2723; font-size: 1.4rem; }
+        .med-modal p { color: #5d4037; line-height: 1.6; font-size: 0.95rem; margin: 20px 0; }
+        .btn-close-modal { padding: 10px 30px; background: #3e2723; color: #d7ccc8; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-close-modal:hover { background: #5d4037; }
+        #modal-cancel-btn:hover { background: #716155 !important; }
+
+        /* 타임라인 및 물컵 */
+        #med-timeline { position: absolute; top: 280px; right: calc(50% - 580px); width: 480px; background: rgba(255,255,255,0.8); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); max-height: 420px; overflow-y: auto; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .day-tabs { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .day-tab { cursor: pointer; font-size: 0.85rem; padding: 6px 12px; border-radius: 8px; transition: 0.2s; color: #8d7b68; font-weight: bold; }
+        .day-tab:hover { background: rgba(243,156,18,0.1); }
+        .day-tab.active { background: var(--accent-color); color: white; }
+        .btn-clear-all { margin-top: 15px; width: 100%; padding: 8px; background: rgba(248,113,113,0.1); border: 1px solid #f87171; border-radius: 8px; color: #f87171; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
+        .btn-clear-all:hover { background: #f87171; color: white; }
+        .timeline-entry { font-size: 0.85rem; padding: 8px 0; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; animation: fadeIn 0.4s ease; }
+        .timeline-header { display: flex; justify-content: space-between; align-items: center; }
+        .timeline-header:hover { opacity: 0.7; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+        #water-glass { position: absolute; top: 280px; left: calc(50% - 400px); width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(135,206,235,0.4), rgba(52,152,219,0.2)); border: 5px dashed #3498db; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #2980b9; font-weight: bold; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 15px 35px rgba(52,152,219,0.1); }
+        #water-glass.highlight { transform: scale(1.15); background: rgba(135,206,235,0.6); border-style: solid; box-shadow: 0 0 30px rgba(52,152,219,0.4); }
+        textarea { width: 100%; height: 150px; background: #faf8f5; color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -102,133 +500,1103 @@
         <button onclick="navTo('home')" class="active">Main</button>
         <button onclick="navTo('diag')">Diagnosis</button>
         <button onclick="navTo('routine')">Routine (Drag & Flow)</button>
-        <button onclick="navTo('diary')">Anonymous Diary</button>
-        <button onclick="navTo('kit')">Healing Kit</button>
+        <button onclick="navTo('meds')">Medication</button>
     </nav>
 </header>
 
+<canvas id="weather-effect"></canvas>
+
 <div class="canvas-container">
+    <!-- ===== HOME ===== -->
     <section id="home" class="page active">
-        <div class="glass-card">
-            <h2>우울증 치료 클리닉</h2>
-            <p style="color:#a1a1aa;">치료 받지 않는 비율 84%[cite: 10].<br>당신의 루틴을 노드로 설계하세요.</p>
+        <div class="home-content">
+            <div class="glass-card" style="position:static; transform:none;">
+                <h2>우울증 치료 클리닉</h2>
+                <p style="color:#a1a1aa;">치료 받지 않는 비율 84%.<br>당신의 루틴을 노드로 설계하세요.</p>
+                <div class="scroll-hint">▼ 아래로 스크롤하여 환경 설정</div>
+            </div>
+            <div class="weather-ctrl-panel">
+                <div class="weather-ctrl">
+                    <button class="weather-btn" onclick="changeWeather('clear')">☀️ 맑음</button>
+                    <button class="weather-btn" onclick="changeWeather('rain')">🌧️ 비</button>
+                    <button class="weather-btn" onclick="changeWeather('snow')">❄️ 눈</button>
+                </div>
+                <p id="weather-status" style="font-size:0.7rem; color:#8d7b68; margin-top:10px; text-align:center; opacity:0.6;">현재 날씨를 변경해보세요</p>
+            </div>
+            <div class="time-picker-container" onmousedown="handleTimeMouseDown(event)">
+                <h3 style="margin:0; font-size:1rem;">시간대 설정</h3>
+                <p style="font-size:0.75rem; margin-bottom:10px;">클릭하거나 스크롤하여 시간을 변경하세요</p>
+                <div class="semi-circle">
+                    <div id="time-indicator" class="time-indicator">
+                        <div class="moon-icon">🌙</div>
+                        <div class="sun-icon">☀️</div>
+                    </div>
+                </div>
+                <div class="time-label"><span>Morning</span><span>Noon</span><span>Night</span></div>
+            </div>
         </div>
     </section>
 
+    <!-- ===== DIAGNOSIS ===== -->
     <section id="diag" class="page">
-        <div class="glass-card"><h3>자가진단</h3><p>감정 키워드를 선택하세요[cite: 18].</p></div>
+        <div id="diag-root">
+            <div id="progress-area">
+                <div id="progress-label">카드 1 / 4 · 0 / 16 완료</div>
+                <div id="progress-bar-wrap"><div id="progress-bar-fill"></div></div>
+            </div>
+            <div id="cards-viewport">
+                <div id="cards-track"></div>
+            </div>
+            <div id="result-screen">
+                <div id="result-card">
+                    <div id="res-badge"></div>
+                    <div id="res-title"></div>
+                    <div id="res-score"></div>
+                    <div id="res-desc"></div>
+                    <div class="res-btn-group">
+                        <button class="btn-res routine" onclick="applyRoutineFromResult()">단계별 맞춤 루틴 추천 적용하기</button>
+                        <button class="btn-res reset" onclick="resetDiag()">처음으로 돌아가기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
+    <!-- ===== MEDICATION ===== -->
+    <section id="meds" class="page">
+        <div style="text-align:center; margin-top:100px;">
+            <h2 style="font-size:2rem;">MY MEDICATION TABLE</h2>
+            <p style="opacity:0.7;">필요한 약을 트레이에서 꺼내어 정리해보세요.</p>
+        </div>
+        <div id="water-glass">
+            <span style="font-size:2rem;">🥛</span>
+            <span>INTAKE</span>
+        </div>
+        <div id="med-timeline">
+            <div class="day-tabs" id="day-tabs">
+                <div class="day-tab" onclick="switchDay('월')">월</div>
+                <div class="day-tab" onclick="switchDay('화')">화</div>
+                <div class="day-tab" onclick="switchDay('수')">수</div>
+                <div class="day-tab" onclick="switchDay('목')">목</div>
+                <div class="day-tab" onclick="switchDay('금')">금</div>
+                <div class="day-tab" onclick="switchDay('토')">토</div>
+                <div class="day-tab" onclick="switchDay('일')">일</div>
+            </div>
+            <div id="timeline-list"></div>
+            <button class="btn-clear-all" onclick="clearDayRecords()">요일 전체 기록 삭제</button>
+        </div>
+        <div id="pill-container"></div>
+        <div id="pill-tray" class="pill-tray"></div>
+        <button class="btn-tray-toggle" onclick="toggleTray()"> 약 보관함 열기/닫기 </button>
+        <button class="btn-refill" onclick="refillTray()"> 약 리필하기 📦 </button>
+    </section>
+
+    <!-- ===== ROUTINE ===== -->
     <section id="routine" class="page">
-        <svg id="svg-canvas">
-            <path id="line1" d="" />
-            <path id="line2" d="" />
-            <path id="line3" d="" />
-        </svg>
-
-        <div class="node" id="node1" style="top:200px; left:100px;">
-            <div class="node-header" onmousedown="startDrag(event, 'node1')"><span>START</span><span>⁝⁝</span></div>
-            <div class="node-body" onclick="toggleConnect(1)">6시 기상 [cite: 39]</div>
+        <button class="add-node-btn" onclick="addNode(false)">+ 기본 노드 추가</button>
+        <button class="add-node-green-btn" onclick="addNode(true)">+ 초록 노드 추가</button>
+        <button class="add-sticky-btn" onclick="addStickyNote()">+ 스티커 메모 추가</button>
+        <button class="add-node-blue-btn" onclick="addPlaceNode()">+ 장소 추가</button>
+        <div id="zoom-layer">
+            <svg id="svg-canvas"></svg>
+            <div class="node" id="node1" style="top:200px; left:100px;">
+                <div class="socket socket-left" onmousedown="onSocketMouseDown(event, 'left')"></div>
+                <div class="socket socket-right" onmousedown="onSocketMouseDown(event, 'right')"></div>
+                <div class="node-header" onmousedown="startDrag(event, 'node1')">
+                    <span>START</span>
+                    <span>
+                        <span class="btn-disconnect" title="연결 끊기" onclick="event.stopPropagation(); disconnectNode('node1')">✂️</span>
+                        <span class="btn-delete" title="삭제" onclick="event.stopPropagation(); deleteNode('node1')">✕</span>
+                        ⁝⁝
+                    </span>
+                </div>
+                <div class="node-body" contenteditable="true" spellcheck="false" onfocus="if(this.innerText.trim()==='6시 기상') this.innerText=''">6시 기상</div>
+            </div>
+            <div class="node" id="node2" style="top:200px; left:400px;">
+                <div class="socket socket-left" onmousedown="onSocketMouseDown(event, 'left')"></div>
+                <div class="socket socket-right" onmousedown="onSocketMouseDown(event, 'right')"></div>
+                <div class="node-header" onmousedown="startDrag(event, 'node2')">
+                    <span>FLOW</span>
+                    <span>
+                        <span class="btn-disconnect" title="연결 끊기" onclick="event.stopPropagation(); disconnectNode('node2')">✂️</span>
+                        <span class="btn-delete" title="삭제" onclick="event.stopPropagation(); deleteNode('node2')">✕</span>
+                        ⁝⁝
+                    </span>
+                </div>
+                <div class="node-body" contenteditable="true" spellcheck="false" onfocus="if(this.innerText.trim()==='출근') this.innerText=''">출근</div>
+            </div>
+            <div class="node" id="node3" style="top:400px; left:700px;">
+                <div class="socket socket-left" onmousedown="onSocketMouseDown(event, 'left')"></div>
+                <div class="socket socket-right" onmousedown="onSocketMouseDown(event, 'right')"></div>
+                <div class="node-header" onmousedown="startDrag(event, 'node3')">
+                    <span>FLOW</span>
+                    <span>
+                        <span class="btn-disconnect" title="연결 끊기" onclick="event.stopPropagation(); disconnectNode('node3')">✂️</span>
+                        <span class="btn-delete" title="삭제" onclick="event.stopPropagation(); deleteNode('node3')">✕</span>
+                        ⁝⁝
+                    </span>
+                </div>
+                <div class="node-body" contenteditable="true" spellcheck="false" onfocus="if(this.innerText.trim()==='퇴근 후 운동') this.innerText=''">퇴근 후 운동</div>
+            </div>
+            <div class="node" id="node4" style="top:200px; left:1000px;">
+                <div class="socket socket-left" onmousedown="onSocketMouseDown(event, 'left')"></div>
+                <div class="socket socket-right" onmousedown="onSocketMouseDown(event, 'right')"></div>
+                <div class="node-header" onmousedown="startDrag(event, 'node4')">
+                    <span>END</span>
+                    <span>
+                        <span class="btn-disconnect" title="연결 끊기" onclick="event.stopPropagation(); disconnectNode('node4')">✂️</span>
+                        <span class="btn-delete" title="삭제" onclick="event.stopPropagation(); deleteNode('node4')">✕</span>
+                        ⁝⁝
+                    </span>
+                </div>
+                <div class="node-body" contenteditable="true" spellcheck="false" onfocus="if(this.innerText.trim()==='퇴근') this.innerText=''">퇴근</div>
+            </div>
         </div>
-
-        <div class="node" id="node2" style="top:200px; left:400px;">
-            <div class="node-header" onmousedown="startDrag(event, 'node2')"><span>FLOW</span><span>⁝⁝</span></div>
-            <div class="node-body" onclick="toggleConnect(2)">출근 [cite: 40]</div>
-        </div>
-
-        <div class="node" id="node3" style="top:400px; left:700px;">
-            <div class="node-header" onmousedown="startDrag(event, 'node3')"><span>FLOW</span><span>⁝⁝</span></div>
-            <div class="node-body" onclick="toggleConnect(3)">퇴근 후 운동 [cite: 41]</div>
-        </div>
-
-        <div class="node" id="node4" style="top:200px; left:1000px;">
-            <div class="node-header" onmousedown="startDrag(event, 'node4')"><span>END</span><span>⁝⁝</span></div>
-            <div class="node-body" onclick="toggleConnect(4)">퇴근 [cite: 42]</div>
-        </div>
-    </section>
-
-    <section id="diary" class="page">
-        <div class="glass-card">
-            <h3>익명 일기 공유 [cite: 35]</h3>
-            <textarea placeholder="해방감과 유대감을 느껴보세요 [cite: 34, 36]"></textarea>
-        </div>
-    </section>
-
-    <section id="kit" class="page">
-        <div class="glass-card" style="text-align:center"><h3>힐링 키트 [cite: 33]</h3><div style="font-size:3rem">🎁</div></div>
     </section>
 </div>
 
+<!-- 약 정보 모달 -->
+<div id="med-modal-overlay" class="med-modal-overlay" onclick="closePillInfo()">
+    <div class="med-modal" onclick="event.stopPropagation()">
+        <h3 id="modal-pill-name">약 이름</h3>
+        <p id="modal-pill-info">약 정보 내용...</p>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button id="modal-confirm-btn" class="btn-close-modal">확인</button>
+            <button id="modal-cancel-btn" class="btn-close-modal" style="background:#8d7b68; display:none;" onclick="closePillInfo()">취소</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    let draggingNode = null;
-    let offset = { x: 0, y: 0 };
+// ===== 루틴 노드 시스템 변수 =====
+let draggingNode = null;
+let lastMousePos = { x: 0, y: 0 };
+let zoomScale = 1;
+let panOffset = { x: 0, y: 0 };
+let isPanning = false;
+let isDrawingLine = false;
+let startSocketInfo = null;
+let tempPath = null;
+let connections = [];
+let nodeCounter = 4;
 
-    // 페이지 전환
-    function navTo(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        document.querySelectorAll('#mainNav button').forEach(btn => btn.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        if(pageId === 'routine') updateAllLines();
+// ===== 진단 시스템 변수 =====
+const diagQuestions = [
+    { q: "1. 기분이 가라앉거나 우울하고 희망이 없다." },
+    { q: "2. 평소 하던 일에 대한 흥미가 거의 없다." },
+    { q: "3. 잠들기 어렵거나 잠을 너무 많이 잔다." },
+    { q: "4. 피곤하고 기운이 거의 없다." },
+    { q: "5. 식욕이 없거나 너무 많이 먹는다." },
+    { q: "6. 자신을 실패자라고 생각하거나 자책한다." },
+    { q: "7. 일상적인 일에 집중하기가 어렵다." },
+    { q: "8. 신체적으로 초조하거나 움직임이 느려졌다." },
+    { q: "9. 차라리 죽는 게 낫겠다는 생각이 든다." },
+    { q: "10. 스스로를 돌보기가 어렵다 (위생, 식사 등)." },
+    { q: "11. 대화나 사회적 활동을 피하게 된다." },
+    { q: "12. 작은 일에도 눈물이 나거나 감정 조절이 어렵다." },
+    { q: "13. 아무것도 즐겁지 않다는 느낌이 든다." },
+    { q: "14. 과거의 일에 대해 지나치게 자책하거나 죄책감을 느낀다." },
+    { q: "15. 미래에 대한 불안이나 두려움이 크다." },
+    { q: "16. 전문가에게 도움을 받는 것에 대해 부담감이 든다." }
+];
+const diagOpts = [
+    { label: "전혀 아님", value: 0 },
+    { label: "며칠간", value: 1 },
+    { label: "자주", value: 2 },
+    { label: "거의 매일", value: 3 }
+];
+const CARD_W = 380;
+const CARD_GAP = 32;
+let currentCard = 0;
+let diagAnswers = {};
+let diagResultLevel = 1;
+
+function buildDiagCards() {
+    const track = document.getElementById('cards-track');
+    track.innerHTML = '';
+    const cardLabels = ['카드 A', '카드 B', '카드 C', '카드 D'];
+    for (let c = 0; c < 4; c++) {
+        const card = document.createElement('div');
+        card.className = 'quiz-card' + (c === 0 ? ' active' : '');
+        card.id = 'diag-card-' + c;
+        card.onclick = (e) => { if (c !== currentCard) diagGoTo(c); };
+
+        const qs = diagQuestions.slice(c * 4, c * 4 + 4);
+        let html = `<div class="card-label"><span class="card-dot"></span>${cardLabels[c]}</div>`;
+        qs.forEach((qObj, qi) => {
+            const idx = c * 4 + qi;
+            html += `<div class="quiz-q" id="diagqq-${idx}">
+                <div class="q-text">${qObj.q}</div>
+                <div class="q-options" id="diagopts-${idx}">
+                    ${diagOpts.map((o) => `<span class="q-opt${diagAnswers[idx] === o.value ? ' selected' : ''}" onclick="event.stopPropagation(); diagSelectOpt(${idx}, ${o.value}, this)">${o.label}</span>`).join('')}
+                </div>
+            </div>`;
+        });
+
+        const isFirst = c === 0;
+        const isLast = c === 3;
+        html += `<div class="card-nav">
+            <button class="btn-nav" onclick="event.stopPropagation(); diagGoTo(${c - 1})" ${isFirst ? 'disabled' : ''}>← 이전</button>
+            ${isLast
+                ? `<button class="btn-nav primary" onclick="event.stopPropagation(); calcDiagResult()">결과 확인 →</button>`
+                : `<button class="btn-nav" onclick="event.stopPropagation(); diagGoTo(${c + 1})">다음 →</button>`}
+        </div>`;
+
+        card.innerHTML = html;
+        track.appendChild(card);
     }
+    updateDiagTrack();
+}
 
-    // 드래그 시작
-    function startDrag(e, id) {
-        draggingNode = document.getElementById(id);
-        const rect = draggingNode.getBoundingClientRect();
-        offset.x = e.clientX - rect.left;
-        offset.y = e.clientY - rect.top;
-        document.addEventListener('mousemove', onDrag);
-        document.addEventListener('mouseup', stopDrag);
+function diagSelectOpt(idx, val, el) {
+    diagAnswers[idx] = val;
+    const container = document.getElementById('diagopts-' + idx);
+    container.querySelectorAll('.q-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+
+    const cardIdx = Math.floor(idx / 4);
+    const answeredInCard = [0,1,2,3].map(i => cardIdx * 4 + i).filter(i => diagAnswers[i] !== undefined).length;
+    if (answeredInCard === 4 && cardIdx < 3) {
+        setTimeout(() => diagGoTo(cardIdx + 1), 350);
     }
+    updateDiagProgress();
+}
 
-    function onDrag(e) {
-        if (!draggingNode) return;
-        draggingNode.style.left = (e.clientX - offset.x) + 'px';
-        draggingNode.style.top = (e.clientY - offset.y) + 'px';
-        updateAllLines();
+function diagGoTo(idx) {
+    if (idx < 0 || idx > 3) return;
+    currentCard = idx;
+    document.querySelectorAll('.quiz-card').forEach((c, i) => {
+        c.classList.toggle('active', i === idx);
+    });
+    updateDiagTrack();
+    updateDiagProgress();
+}
+
+function updateDiagTrack() {
+    const track = document.getElementById('cards-track');
+    const viewW = document.getElementById('cards-viewport').offsetWidth;
+    const cardFullW = CARD_W + CARD_GAP;
+    const centerOffset = viewW / 2 - CARD_W / 2;
+    const tx = centerOffset - currentCard * cardFullW;
+    track.style.transform = `translateX(${tx}px)`;
+}
+
+function updateDiagProgress() {
+    const answered = Object.keys(diagAnswers).length;
+    document.getElementById('progress-label').textContent = `카드 ${currentCard + 1} / 4 · ${answered} / 16 완료`;
+    document.getElementById('progress-bar-fill').style.width = ((answered / 16) * 100) + '%';
+}
+
+function calcDiagResult() {
+    const answered = Object.keys(diagAnswers).length;
+    if (answered < 16) {
+        let firstMissCard = 0;
+        for (let i = 0; i < 16; i++) {
+            if (diagAnswers[i] === undefined) { firstMissCard = Math.floor(i / 4); break; }
+        }
+        diagGoTo(firstMissCard);
+        return;
     }
+    const total = Object.values(diagAnswers).reduce((s, v) => s + v, 0);
+    showDiagResult(total);
+}
 
-    function stopDrag() {
-        draggingNode = null;
-        document.removeEventListener('mousemove', onDrag);
-        document.removeEventListener('mouseup', stopDrag);
+function showDiagResult(total) {
+    document.getElementById('cards-viewport').style.display = 'none';
+    document.getElementById('progress-area').style.display = 'none';
+    const rs = document.getElementById('result-screen');
+    rs.style.display = 'block';
+
+    let level, title, desc, badgeBg, badgeColor;
+    if (total <= 12) {
+        level = 1; title = '1단계 — 정상 / 안정';
+        desc = '현재 심리적으로 안정된 상태입니다. 일상의 즐거움을 유지하고 꾸준한 자기 돌봄을 이어가세요.';
+        badgeBg = '#e8f5e9'; badgeColor = '#27ae60';
+    } else if (total <= 24) {
+        level = 2; title = '2단계 — 경미한 주의';
+        desc = '약간의 우울감이 느껴집니다. 가벼운 산책, 취미 활동, 규칙적인 수면이 도움이 될 수 있습니다.';
+        badgeBg = '#fff9c4'; badgeColor = '#a07000';
+    } else if (total <= 36) {
+        level = 3; title = '3단계 — 위험';
+        desc = '중간 정도의 우울감이 있습니다. 주변 지인과 대화를 나누거나 전문 상담을 고려해보세요.';
+        badgeBg = '#fde8cc'; badgeColor = '#c0621a';
+    } else {
+        level = 4; title = '4단계 — 매우 심각';
+        desc = '심한 우울 증상이 관찰됩니다. 반드시 전문 의료기관을 방문하여 전문가의 진단과 치료를 받으시길 강력히 권장합니다.';
+        badgeBg = '#fdecec'; badgeColor = '#c0392b';
     }
+    diagResultLevel = level;
 
-    // 노드 연결선 업데이트
-    function updateAllLines() {
-        drawCurve('node1', 'node2', 'line1');
-        drawCurve('node2', 'node3', 'line2');
-        drawCurve('node3', 'node4', 'line3');
+    const badge = document.getElementById('res-badge');
+    badge.textContent = `LEVEL ${level}`;
+    badge.style.background = badgeBg;
+    badge.style.color = badgeColor;
+    badge.style.display = 'inline-block';
+    badge.style.padding = '6px 18px';
+    badge.style.borderRadius = '20px';
+    badge.style.fontSize = '0.75rem';
+    badge.style.fontWeight = '700';
+    badge.style.marginBottom = '16px';
+
+    document.getElementById('res-title').innerHTML = `<span class="level-${level}">${title}</span>`;
+    document.getElementById('res-score').textContent = `총점: ${total} / 48`;
+    document.getElementById('res-desc').textContent = desc;
+}
+
+function applyRoutineFromResult() {
+    applyRecommendations(diagResultLevel);
+}
+
+function resetDiag() {
+    diagAnswers = {};
+    currentCard = 0;
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('cards-viewport').style.display = 'block';
+    document.getElementById('progress-area').style.display = 'block';
+    buildDiagCards();
+    updateDiagProgress();
+}
+
+// ===== 효과음 =====
+function playConnectSound() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'sine';
+        const now = audioCtx.currentTime;
+        oscillator.frequency.setValueAtTime(523.25, now);
+        oscillator.frequency.exponentialRampToValueAtTime(783.99, now + 0.1);
+        gainNode.gain.setValueAtTime(0.15, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(now + 0.3);
+    } catch (e) {}
+}
+
+function playPlasticClickSound() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'triangle';
+        const now = audioCtx.currentTime;
+        oscillator.frequency.setValueAtTime(1200, now);
+        oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.05);
+        gainNode.gain.setValueAtTime(0.1, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(now + 0.05);
+    } catch (e) {}
+}
+
+function playTokSound() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'sine';
+        const now = audioCtx.currentTime;
+        oscillator.frequency.setValueAtTime(800, now);
+        oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+        gainNode.gain.setValueAtTime(0.3, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(now + 0.1);
+    } catch (e) {}
+}
+
+// ===== 페이지 전환 =====
+function navTo(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    const buttons = document.querySelectorAll('#mainNav button');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    if (pageId === 'home') buttons[0].classList.add('active');
+    else if (pageId === 'diag') buttons[1].classList.add('active');
+    else if (pageId === 'routine') buttons[2].classList.add('active');
+    else if (pageId === 'meds') buttons[3].classList.add('active');
+    if (pageId === 'routine') updateAllLines();
+    if (pageId === 'diag') setTimeout(() => updateDiagTrack(), 50);
+}
+
+// ===== 약 관리 시스템 =====
+const pillShapes = ['capsule', 'round', 'oval', 'square'];
+const pillData = [];
+const pillNames = ['에스시탈로프람','부프로피온','둘록세틴','알프라졸람','미르타자핀','플루옥세틴','설트랄린','파록세틴','벤라팍신','쿠에티아핀'];
+const dayNamesList = ['일','월','화','수','목','금','토'];
+let currentActiveDay = dayNamesList[new Date().getDay()];
+let dayRecords = { '월':[],'화':[],'수':[],'목':[],'금':[],'토':[],'일':[] };
+
+function switchDay(day) {
+    currentActiveDay = day;
+    document.querySelectorAll('.day-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.innerText === day);
+    });
+    renderTimeline();
+}
+
+function renderTimeline() {
+    const list = document.getElementById('timeline-list');
+    list.innerHTML = '';
+    const records = dayRecords[currentActiveDay];
+    if (records.length === 0) {
+        list.innerHTML = `<p style="text-align:center; color:#8d7b68; font-size:0.8rem; margin-top:20px; opacity:0.6;">${currentActiveDay}요일 복용 기록이 없습니다.</p>`;
+        return;
     }
+    records.forEach((record, index) => {
+        const entry = document.createElement('div');
+        entry.className = 'timeline-entry';
+        entry.innerHTML = `
+            <div class="timeline-header">
+                <div style="flex:1; cursor:pointer;" onclick="const m = this.parentElement.nextElementSibling; m.style.display = m.style.display === 'none' ? 'block' : 'none';">
+                    <span><strong>${record.name}</strong></span>
+                    <span style="color:#2980b9; font-weight:bold; margin-left:8px;">${record.time} ▼</span>
+                </div>
+                <span class="btn-delete" style="font-size:0.7rem;" onclick="event.stopPropagation(); deleteRecord(${index})">✕</span>
+            </div>
+            <div class="pill-memo" style="display:${record.memo ? 'block' : 'none'}; margin-top:8px;">
+                <textarea placeholder="복용 메모를 입력하세요" onchange="dayRecords['${currentActiveDay}'][${index}].memo = this.value" style="height:60px; font-size:0.8rem;">${record.memo || ''}</textarea>
+            </div>`;
+        list.appendChild(entry);
+    });
+}
 
-    function drawCurve(startId, endId, lineId) {
-        const start = document.getElementById(startId).getBoundingClientRect();
-        const end = document.getElementById(endId).getBoundingClientRect();
-        const path = document.getElementById(lineId);
+function deleteRecord(index) {
+    dayRecords[currentActiveDay].splice(index, 1);
+    renderTimeline();
+}
 
-        const x1 = start.left + start.width;
-        const y1 = start.top + start.height / 2;
-        const x2 = end.left;
-        const y2 = end.top + end.height / 2;
+function clearDayRecords() {
+    if (dayRecords[currentActiveDay].length === 0) return;
+    showModal("기록 삭제 확인", `${currentActiveDay}요일의 모든 복용 기록을 삭제하시겠습니까?`, () => {
+        dayRecords[currentActiveDay] = [];
+        renderTimeline();
+    });
+}
 
-        const cp1x = x1 + (x2 - x1) / 2;
-        const cp2x = x1 + (x2 - x1) / 2;
+for (let i = 0; i < 20; i++) {
+    pillData.push({
+        id: `pill${i}`,
+        name: pillNames[i % pillNames.length] + (i >= 10 ? ' II' : ''),
+        color1: `hsl(${(i * 137) % 360}, 70%, 60%)`,
+        color2: `hsl(${(i * 137) % 360}, 40%, 85%)`,
+        shape: pillShapes[i % pillShapes.length],
+        info: '복용 시 의사의 지시를 따르세요. 규칙적인 복용이 중요합니다.'
+    });
+}
 
-        path.setAttribute('d', `M ${x1} ${y1} C ${cp1x} ${y1}, ${cp2x} ${y2}, ${x2} ${y2}`);
+function toggleTray() {
+    const tray = document.getElementById('pill-tray');
+    tray.classList.toggle('open');
+}
+
+function refillTray() {
+    const tray = document.getElementById('pill-tray');
+    const container = document.getElementById('pill-container');
+    tray.innerHTML = '';
+    container.innerHTML = '';
+    initMeds();
+    playConnectSound();
+}
+
+function initMeds() {
+    const tray = document.getElementById('pill-tray');
+    pillData.forEach((pill) => {
+        const slot = document.createElement('div');
+        slot.className = 'pill-slot';
+        tray.appendChild(slot);
+        const pillEl = document.createElement('div');
+        pillEl.className = `pill-item ${pill.shape}`;
+        pillEl.id = pill.id;
+        if (pill.shape === 'capsule') pillEl.style.background = `linear-gradient(to right, ${pill.color1} 50%, ${pill.color2} 50%)`;
+        else pillEl.style.background = `radial-gradient(circle at 30% 30%, ${pill.color2}, ${pill.color1})`;
+        pillEl.onmousedown = (e) => { if (e.button === 0) startPillDrag(e, pill.id); };
+        pillEl.onclick = (e) => { if (!isDraggingPill) showPillInfo(pill); };
+        const label = document.createElement('div');
+        label.className = 'pill-label';
+        label.innerText = pill.name;
+        pillEl.appendChild(label);
+        slot.appendChild(pillEl);
+    });
+}
+
+let isDraggingPill = false;
+let pillOffset = { x: 0, y: 0 };
+
+function startPillDrag(e, id) {
+    isDraggingPill = false;
+    const pill = document.getElementById(id);
+    const medsSection = document.getElementById('meds');
+    const sectionRect = medsSection.getBoundingClientRect();
+    const waterGlass = document.getElementById('water-glass');
+    const rect = pill.getBoundingClientRect();
+    pillOffset.x = e.clientX - rect.left;
+    pillOffset.y = e.clientY - rect.top;
+    const shadow = document.createElement('div');
+    shadow.className = 'pill-shadow ' + Array.from(pill.classList).filter(c => c !== 'pill-item').join(' ');
+    shadow.style.width = pill.offsetWidth + 'px';
+    shadow.style.height = pill.offsetHeight + 'px';
+    const initialLeft = rect.left - sectionRect.left;
+    const initialTop = rect.top - sectionRect.top;
+    shadow.style.left = (initialLeft + 15) + 'px';
+    shadow.style.top = (initialTop + 20) + 'px';
+    document.getElementById('pill-container').appendChild(shadow);
+    setTimeout(() => { shadow.style.opacity = '1'; shadow.style.transform = 'scale(0.95)'; }, 10);
+    const moveHandler = (moveEvt) => {
+        isDraggingPill = true;
+        if (pill.parentElement.classList.contains('pill-slot')) {
+            playPlasticClickSound();
+            document.getElementById('pill-container').appendChild(pill);
+            pill.style.position = 'absolute';
+        }
+        let left = moveEvt.clientX - sectionRect.left - pillOffset.x;
+        let top = moveEvt.clientY - sectionRect.top - pillOffset.y;
+        pill.style.left = left + 'px';
+        pill.style.top = top + 'px';
+        pill.style.bottom = 'auto';
+        pill.style.transform = 'scale(1.1)';
+        pill.style.zIndex = '1000';
+        document.body.style.cursor = 'grabbing';
+        shadow.style.left = (left + 15) + 'px';
+        shadow.style.top = (top + 20) + 'px';
+        const glassRect = waterGlass.getBoundingClientRect();
+        if (moveEvt.clientX > glassRect.left && moveEvt.clientX < glassRect.right && moveEvt.clientY > glassRect.top && moveEvt.clientY < glassRect.bottom) {
+            waterGlass.classList.add('highlight');
+        } else {
+            waterGlass.classList.remove('highlight');
+        }
+    };
+    const upHandler = (upEvt) => {
+        const glassRect = waterGlass.getBoundingClientRect();
+        if (isDraggingPill && upEvt.clientX > glassRect.left && upEvt.clientX < glassRect.right && upEvt.clientY > glassRect.top && upEvt.clientY < glassRect.bottom) {
+            recordIntake(id);
+            pill.remove();
+        } else {
+            pill.style.zIndex = '100';
+        }
+        shadow.remove();
+        waterGlass.classList.remove('highlight');
+        document.body.style.cursor = '';
+        setTimeout(() => { isDraggingPill = false; }, 100);
+        window.removeEventListener('mousemove', moveHandler);
+        window.removeEventListener('mouseup', upHandler);
+    };
+    window.addEventListener('mousemove', moveHandler);
+    window.addEventListener('mouseup', upHandler, { once: true });
+}
+
+function recordIntake(pillId) {
+    const pill = pillData.find(p => p.id === pillId);
+    const now = new Date();
+    const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+    dayRecords[currentActiveDay].unshift({ name: pill.name, time: timeStr, memo: '' });
+    renderTimeline();
+    playTokSound();
+}
+
+function showModal(title, content, onConfirm = null) {
+    document.getElementById('modal-pill-name').innerText = title;
+    document.getElementById('modal-pill-info').innerText = content;
+    const confirmBtn = document.getElementById('modal-confirm-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+    if (onConfirm) {
+        cancelBtn.style.display = 'inline-block';
+        confirmBtn.onclick = () => { onConfirm(); closePillInfo(); };
+    } else {
+        cancelBtn.style.display = 'none';
+        confirmBtn.onclick = closePillInfo;
     }
+    document.getElementById('med-modal-overlay').classList.add('active');
+}
 
-    function toggleConnect(index) {
-        const node = document.getElementById('node' + index);
-        node.classList.toggle('connected');
-        const line = document.getElementById('line' + (index-1));
-        if(line) line.classList.toggle('active');
+function showPillInfo(pill) { showModal(pill.name, pill.info); }
+function closePillInfo() { document.getElementById('med-modal-overlay').classList.remove('active'); }
+
+// ===== 루틴 노드 시스템 =====
+function applyTransform() {
+    const layer = document.getElementById('zoom-layer');
+    layer.style.transform = `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomScale})`;
+}
+
+function startDrag(e, id) {
+    draggingNode = document.getElementById(id);
+    lastMousePos = { x: e.clientX, y: e.clientY };
+    document.body.style.cursor = 'move';
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', stopDrag);
+}
+
+function onDrag(e) {
+    if (!draggingNode) return;
+    const dx = (e.clientX - lastMousePos.x) / zoomScale;
+    const dy = (e.clientY - lastMousePos.y) / zoomScale;
+    draggingNode.style.left = (parseFloat(draggingNode.style.left) || 0) + dx + 'px';
+    draggingNode.style.top = (parseFloat(draggingNode.style.top) || 0) + dy + 'px';
+    lastMousePos = { x: e.clientX, y: e.clientY };
+    updateAllLines();
+}
+
+function stopDrag() {
+    document.body.style.cursor = '';
+    draggingNode = null;
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', stopDrag);
+}
+
+function getSocketCoords(nodeId, side) {
+    const node = document.getElementById(nodeId);
+    const socket = node.querySelector(`.socket-${side}`);
+    return {
+        x: node.offsetLeft + socket.offsetLeft + socket.offsetWidth / 2,
+        y: node.offsetTop + socket.offsetTop + socket.offsetHeight / 2
+    };
+}
+
+function updateAllLines() {
+    connections.forEach(conn => {
+        const p1 = getSocketCoords(conn.from, conn.fromSide);
+        const p2 = getSocketCoords(conn.to, conn.toSide);
+        const cp1x = p1.x + (p2.x - p1.x) / 2;
+        const cp2x = p1.x + (p2.x - p1.x) / 2;
+        conn.path.setAttribute('d', `M ${p1.x} ${p1.y} C ${cp1x} ${p1.y}, ${cp2x} ${p2.y}, ${p2.x} ${p2.y}`);
+    });
+}
+
+function onSocketMouseDown(e, side) {
+    e.stopPropagation();
+    const startNode = e.target.closest('.node');
+    const nodeId = startNode.id;
+    const isGreen = startNode.classList.contains('green-node');
+    const isBlue = startNode.classList.contains('blue-node');
+    isDrawingLine = true;
+    startSocketInfo = { nodeId, side };
+    tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    tempPath.classList.add('active');
+    tempPath.style.stroke = isGreen ? "#27ae60" : (isBlue ? "#3498db" : "var(--accent-color)");
+    tempPath.style.opacity = "0.5";
+    document.getElementById('svg-canvas').appendChild(tempPath);
+    document.body.style.cursor = 'crosshair';
+    document.addEventListener('mousemove', onMouseMoveLine);
+    document.addEventListener('mouseup', onMouseUpLine);
+}
+
+function onMouseMoveLine(e) {
+    if (!isDrawingLine) return;
+    const lRect = document.getElementById('zoom-layer').getBoundingClientRect();
+    const p1 = getSocketCoords(startSocketInfo.nodeId, startSocketInfo.side);
+    const x2 = (e.clientX - lRect.left) / zoomScale;
+    const y2 = (e.clientY - lRect.top) / zoomScale;
+    const cp1x = p1.x + (x2 - p1.x) / 2;
+    const cp2x = p1.x + (x2 - p1.x) / 2;
+    tempPath.setAttribute('d', `M ${p1.x} ${p1.y} C ${cp1x} ${p1.y}, ${cp2x} ${y2}, ${x2} ${y2}`);
+    const targetElement = document.elementFromPoint(e.clientX, e.clientY);
+    const targetSocket = targetElement ? targetElement.closest('.socket') : null;
+    if (targetSocket) {
+        const targetNodeId = targetSocket.closest('.node').id;
+        document.body.style.cursor = targetNodeId !== startSocketInfo.nodeId ? 'copy' : 'no-drop';
+    } else {
+        document.body.style.cursor = 'crosshair';
     }
+}
 
-    // 초기 선 그리기
-    window.onload = updateAllLines;
-    window.onresize = updateAllLines;
+function onMouseUpLine(e) {
+    document.body.style.cursor = '';
+    const targetSocket = e.target.closest('.socket');
+    if (targetSocket) {
+        const endNodeId = targetSocket.closest('.node').id;
+        const endSide = targetSocket.classList.contains('socket-left') ? 'left' : 'right';
+        const fromNode = document.getElementById(startSocketInfo.nodeId);
+        const toNode = document.getElementById(endNodeId);
+        const isGreenConnection = fromNode.classList.contains('green-node') || toNode.classList.contains('green-node');
+        const isBlueConnection = fromNode.classList.contains('blue-node') || toNode.classList.contains('blue-node');
+        if (endNodeId !== startSocketInfo.nodeId) {
+            const existingIdx = connections.findIndex(c =>
+                (c.from === startSocketInfo.nodeId && c.to === endNodeId && c.fromSide === startSocketInfo.side && c.toSide === endSide) ||
+                (c.from === endNodeId && c.to === startSocketInfo.nodeId && c.fromSide === endSide && c.toSide === startSocketInfo.side)
+            );
+            if (existingIdx !== -1) {
+                connections[existingIdx].path.remove();
+                connections.splice(existingIdx, 1);
+            } else {
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.classList.add('active');
+                if (isGreenConnection) path.classList.add('green-line');
+                if (isBlueConnection) path.classList.add('blue-line');
+                document.getElementById('svg-canvas').appendChild(path);
+                connections.push({ from: startSocketInfo.nodeId, fromSide: startSocketInfo.side, to: endNodeId, toSide: endSide, path: path });
+                playConnectSound();
+            }
+            updateAllLines();
+            updateConnectedStatus();
+        }
+    }
+    if (tempPath) tempPath.remove();
+    isDrawingLine = false;
+    startSocketInfo = null;
+    document.removeEventListener('mousemove', onMouseMoveLine);
+    document.removeEventListener('mouseup', onMouseUpLine);
+}
+
+function updateConnectedStatus() {
+    document.querySelectorAll('.node').forEach(n => n.classList.remove('connected'));
+    connections.forEach(c => {
+        document.getElementById(c.from).classList.add('connected');
+        document.getElementById(c.to).classList.add('connected');
+    });
+}
+
+function disconnectNode(nodeId) {
+    connections = connections.filter(conn => {
+        if (conn.from === nodeId || conn.to === nodeId) { conn.path.remove(); return false; }
+        return true;
+    });
+    updateConnectedStatus();
+    updateAllLines();
+}
+
+function deleteNode(nodeId) {
+    connections = connections.filter(conn => {
+        if (conn.from === nodeId || conn.to === nodeId) { conn.path.remove(); return false; }
+        return true;
+    });
+    const node = document.getElementById(nodeId);
+    if (node) node.remove();
+    updateConnectedStatus();
+}
+
+function addNode(isGreen = false) {
+    nodeCounter++;
+    const newNodeId = `node${nodeCounter}`;
+    const zoomLayer = document.getElementById('zoom-layer');
+    const newNode = document.createElement('div');
+    newNode.className = 'node' + (isGreen ? ' green-node' : '');
+    newNode.id = newNodeId;
+    newNode.style.top = `${Math.random() * (window.innerHeight - 200) + 100}px`;
+    newNode.style.left = `${Math.random() * (window.innerWidth - 300) + 100}px`;
+    newNode.innerHTML = `
+        <div class="socket socket-left" onmousedown="onSocketMouseDown(event, 'left')"></div>
+        <div class="socket socket-right" onmousedown="onSocketMouseDown(event, 'right')"></div>
+        <div class="node-header" onmousedown="startDrag(event, '${newNodeId}')">
+            <span>NEW</span>
+            <span>
+                <span class="btn-disconnect" title="연결 끊기" onclick="event.stopPropagation(); disconnectNode('${newNodeId}')">✂️</span>
+                <span class="btn-delete" title="삭제" onclick="event.stopPropagation(); deleteNode('${newNodeId}')">✕</span>
+                ⁝⁝
+            </span>
+        </div>
+        <div class="node-body" contenteditable="true" spellcheck="false" onfocus="if(this.innerText.trim()==='새로운 노드') this.innerText=''">새로운 노드</div>
+    `;
+    zoomLayer.appendChild(newNode);
+    updateAllLines();
+}
+
+function addPlaceNode() {
+    const placeName = prompt("장소 이름이나 주소를 입력하세요:", "서울시청");
+    if (!placeName) return;
+    nodeCounter++;
+    const newNodeId = `node${nodeCounter}`;
+    const zoomLayer = document.getElementById('zoom-layer');
+    const newNode = document.createElement('div');
+    newNode.className = 'node blue-node';
+    newNode.id = newNodeId;
+    newNode.style.top = `${Math.random() * (window.innerHeight - 200) + 100}px`;
+    newNode.style.left = `${Math.random() * (window.innerWidth - 300) + 100}px`;
+    const mapUrl = `https://www.google.com/maps/search/${encodeURIComponent(placeName)}`;
+    const embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(placeName)}&output=embed`;
+    newNode.innerHTML = `
+        <div class="socket socket-left" onmousedown="onSocketMouseDown(event, 'left')"></div>
+        <div class="socket socket-right" onmousedown="onSocketMouseDown(event, 'right')"></div>
+        <div class="node-header" onmousedown="startDrag(event, '${newNodeId}')">
+            <span>PLACE</span>
+            <span>
+                <span class="btn-disconnect" title="연결 끊기" onclick="event.stopPropagation(); disconnectNode('${newNodeId}')">✂️</span>
+                <span class="btn-delete" title="삭제" onclick="event.stopPropagation(); deleteNode('${newNodeId}')">✕</span>
+                ⁝⁝
+            </span>
+        </div>
+        <div class="node-body">
+            <div style="font-size:0.8rem; color:#21618c; margin-bottom:5px;">📍 ${placeName}</div>
+            <iframe class="map-iframe" src="${embedUrl}"></iframe>
+            <div style="margin-top:5px;"><a href="${mapUrl}" target="_blank" style="font-size:0.7rem; color:#3498db; text-decoration:none;">[자세히 보기]</a></div>
+        </div>
+    `;
+    zoomLayer.appendChild(newNode);
+    updateAllLines();
+}
+
+let stickyCounter = 0;
+function addStickyNote() {
+    stickyCounter++;
+    const stickyId = `sticky-${stickyCounter}`;
+    const sticky = document.createElement('div');
+    sticky.className = 'sticky-note';
+    sticky.id = stickyId;
+    sticky.style.top = `${Math.random() * 200 + 200}px`;
+    sticky.style.left = `${Math.random() * 200 + 200}px`;
+    sticky.onmousedown = (e) => {
+        const rect = sticky.getBoundingClientRect();
+        const isResizeHandle = (e.clientX > rect.right - 25 && e.clientY > rect.bottom - 25);
+        const isControl = e.target.closest('.btn-delete');
+        if (!isResizeHandle && !isControl) startDrag(e, stickyId);
+    };
+    sticky.innerHTML = `
+        <span class="btn-delete" style="position:absolute; top:5px; right:5px; z-index:10;" onclick="this.parentElement.remove()">✕</span>
+        <div class="sticky-note-body" contenteditable="true" spellcheck="false" onfocus="if(this.innerText.trim()==='메모를 입력하세요...') this.innerText=''">메모를 입력하세요...</div>
+    `;
+    document.getElementById('zoom-layer').appendChild(sticky);
+}
+
+function applyRecommendations(level) {
+    navTo('routine');
+    document.querySelectorAll('.node').forEach(node => deleteNode(node.id));
+    const recommendations = {
+        1: ["아침 명상 5분", "규칙적인 운동", "감사 일기 쓰기", "충분한 수면"],
+        2: ["햇볕 쬐며 산책", "좋아하는 음악 감상", "친구와 커피 한잔", "비타민 챙겨먹기"],
+        3: ["심호흡 10회", "따뜻한 차 마시기", "스마트폰 멀리하기", "심리 상담 예약"],
+        4: ["전문 병원 방문", "주변에 도움 요청", "최소한의 위생 관리", "조용한 환경에서 휴식"]
+    };
+    const tasks = recommendations[level] || recommendations[1];
+    const createdNodeIds = [];
+    tasks.forEach((task, index) => {
+        nodeCounter++;
+        const newNodeId = `node${nodeCounter}`;
+        createdNodeIds.push(newNodeId);
+        const newNode = document.createElement('div');
+        newNode.className = 'node';
+        newNode.id = newNodeId;
+        newNode.style.top = `${200 + (index % 2) * 150}px`;
+        newNode.style.left = `${100 + index * 250}px`;
+        newNode.innerHTML = `
+            <div class="socket socket-left" onmousedown="onSocketMouseDown(event, 'left')"></div>
+            <div class="socket socket-right" onmousedown="onSocketMouseDown(event, 'right')"></div>
+            <div class="node-header" onmousedown="startDrag(event, '${newNodeId}')">
+                <span>${index === 0 ? 'START' : index === tasks.length - 1 ? 'END' : 'FLOW'}</span>
+                <span>
+                    <span class="btn-disconnect" title="연결 끊기" onclick="event.stopPropagation(); disconnectNode('${newNodeId}')">✂️</span>
+                    <span class="btn-delete" title="삭제" onclick="event.stopPropagation(); deleteNode('${newNodeId}')">✕</span>
+                    ⁝⁝
+                </span>
+            </div>
+            <div class="node-body" contenteditable="true" spellcheck="false" onfocus="if(this.innerText.trim()==='${task}') this.innerText=''">${task}</div>
+        `;
+        document.getElementById('zoom-layer').appendChild(newNode);
+    });
+    for (let i = 0; i < createdNodeIds.length - 1; i++) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.classList.add('active');
+        document.getElementById('svg-canvas').appendChild(path);
+        connections.push({ from: createdNodeIds[i], fromSide: 'right', to: createdNodeIds[i+1], toSide: 'left', path: path });
+    }
+    updateAllLines();
+    updateConnectedStatus();
+    alert("당신의 마음 상태에 맞는 추천 루틴이 구성되었습니다.");
+}
+
+// ===== 초기 선 그리기 =====
+window.onload = () => {
+    const initialPairs = [
+        { f: 'node1', fs: 'right', t: 'node2', ts: 'left' },
+        { f: 'node2', fs: 'right', t: 'node3', ts: 'left' },
+        { f: 'node3', fs: 'right', t: 'node4', ts: 'left' }
+    ];
+    initialPairs.forEach(pair => {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.classList.add('active');
+        document.getElementById('svg-canvas').appendChild(path);
+        connections.push({ from: pair.f, fromSide: pair.fs, to: pair.t, toSide: pair.ts, path: path });
+    });
+    updateAllLines();
+    updateConnectedStatus();
+};
+
+// ===== 화면 이동(Panning) =====
+const routineSec = document.getElementById('routine');
+routineSec.addEventListener('mousedown', (e) => {
+    const isLeftClickOnBg = e.button === 0 && (e.target.id === 'routine' || e.target.id === 'zoom-layer' || e.target.tagName === 'svg');
+    const isMiddleClick = e.button === 1;
+    if (isLeftClickOnBg || isMiddleClick) {
+        if (isMiddleClick) e.preventDefault();
+        isPanning = true;
+        lastMousePos = { x: e.clientX, y: e.clientY };
+        document.body.style.cursor = 'grabbing';
+    }
+});
+window.addEventListener('mousemove', (e) => {
+    if (isPanning) {
+        const dx = e.clientX - lastMousePos.x;
+        const dy = e.clientY - lastMousePos.y;
+        panOffset.x += dx;
+        panOffset.y += dy;
+        lastMousePos = { x: e.clientX, y: e.clientY };
+        applyTransform();
+    }
+});
+window.addEventListener('mouseup', () => {
+    if (isPanning) { isPanning = false; document.body.style.cursor = ''; }
+});
+window.addEventListener('wheel', (e) => {
+    const routinePage = document.getElementById('routine');
+    if (routinePage.classList.contains('active')) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        const newScale = zoomScale * delta;
+        if (newScale >= 0.2 && newScale <= 3) {
+            const routineRect = routinePage.getBoundingClientRect();
+            const mouseX = e.clientX - routineRect.left;
+            const mouseY = e.clientY - routineRect.top;
+            const lx = (mouseX - panOffset.x) / zoomScale;
+            const ly = (mouseY - panOffset.y) / zoomScale;
+            zoomScale = newScale;
+            panOffset.x = mouseX - lx * zoomScale;
+            panOffset.y = mouseY - ly * zoomScale;
+            applyTransform();
+            updateAllLines();
+        }
+    }
+}, { passive: false });
+window.onresize = () => { updateAllLines(); updateDiagTrack(); };
+
+// ===== 날씨 효과 시스템 =====
+const weatherCanvas = document.getElementById('weather-effect');
+const wCtx = weatherCanvas.getContext('2d');
+let weatherType = 'clear';
+let currentTimeRatio = 0.5;
+let particles = [];
+let stars = [];
+
+function initStars() {
+    stars = [];
+    for (let i = 0; i < 100; i++) {
+        stars.push({ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight * 0.7, size: Math.random() * 1.5, opacity: Math.random(), speed: Math.random() * 0.02 + 0.005 });
+    }
+}
+
+function lerpColor(a, b, t) { return a.map((val, i) => Math.round(val + (b[i] - val) * t)); }
+
+function updateEnvironment() {
+    const angle = (currentTimeRatio * 180) - 90;
+    const indicator = document.getElementById('time-indicator');
+    if (indicator) indicator.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+    const moonIcon = document.querySelector('.moon-icon');
+    if (moonIcon) { moonIcon.style.opacity = Math.max(0, (currentTimeRatio - 0.5) * 2); moonIcon.style.transform = `translateX(-50%) rotate(${-angle}deg)`; }
+    const sunIcon = document.querySelector('.sun-icon');
+    if (sunIcon) { sunIcon.style.opacity = Math.max(0, (0.5 - currentTimeRatio) * 2); sunIcon.style.transform = `translateX(-50%) rotate(${-angle}deg)`; }
+    let baseRgb;
+    if (currentTimeRatio < 0.5) {
+        baseRgb = lerpColor([255, 204, 128], [253, 250, 246], currentTimeRatio * 2);
+    } else {
+        baseRgb = lerpColor([253, 250, 246], [44, 62, 80], (currentTimeRatio - 0.5) * 2);
+    }
+    let finalRgb = [...baseRgb];
+    if (weatherType === 'rain') finalRgb = lerpColor(finalRgb, [100, 110, 140], 0.4);
+    else if (weatherType === 'snow') finalRgb = lerpColor(finalRgb, [220, 230, 245], 0.3);
+    document.documentElement.style.setProperty('--bg-color', `rgb(${finalRgb.join(',')})`);
+}
+
+let isDraggingTime = false;
+function handleTimeMouseDown(e) {
+    isDraggingTime = true;
+    handleTimeUpdate(e);
+    window.addEventListener('mousemove', handleTimeUpdate);
+    window.addEventListener('mouseup', handleTimeMouseUp);
+}
+function handleTimeMouseUp() {
+    isDraggingTime = false;
+    window.removeEventListener('mousemove', handleTimeUpdate);
+    window.removeEventListener('mouseup', handleTimeMouseUp);
+}
+function handleTimeUpdate(e) {
+    if (!isDraggingTime) return;
+    const semiCircle = document.querySelector('.semi-circle');
+    if (!semiCircle) return;
+    const rect = semiCircle.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.bottom;
+    const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+    currentTimeRatio = Math.max(0, Math.min(1, (angle + Math.PI) / Math.PI));
+    updateEnvironment();
+}
+
+function resizeWeather() { weatherCanvas.width = window.innerWidth; weatherCanvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeWeather);
+resizeWeather();
+
+function createParticles() {
+    particles = [];
+    const count = weatherType === 'rain' ? 100 : 150;
+    for (let i = 0; i < count; i++) {
+        if (weatherType === 'rain') {
+            particles.push({ x: Math.random() * weatherCanvas.width, y: Math.random() * weatherCanvas.height, l: Math.random() * 20 + 10, v: Math.random() * 10 + 10 });
+        } else if (weatherType === 'snow') {
+            particles.push({ x: Math.random() * weatherCanvas.width, y: Math.random() * weatherCanvas.height, r: Math.random() * 3 + 1, v: Math.random() * 1 + 0.5, d: Math.random() * 10, s: Math.random() * 0.02 });
+        }
+    }
+}
+
+function drawWeather() {
+    wCtx.clearRect(0, 0, weatherCanvas.width, weatherCanvas.height);
+    if (currentTimeRatio > 0.6) {
+        const starAlpha = Math.min(1, (currentTimeRatio - 0.6) * 2.5);
+        stars.forEach(s => {
+            s.opacity += s.speed;
+            if (s.opacity > 1 || s.opacity < 0) s.speed *= -1;
+            wCtx.beginPath();
+            wCtx.fillStyle = `rgba(255,255,255,${Math.abs(s.opacity) * starAlpha})`;
+            wCtx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            wCtx.fill();
+        });
+    }
+    if (weatherType === 'rain') {
+        wCtx.strokeStyle = 'rgba(174,194,224,0.5)';
+        wCtx.lineWidth = 1;
+        wCtx.lineCap = 'round';
+        particles.forEach(p => {
+            wCtx.beginPath(); wCtx.moveTo(p.x, p.y); wCtx.lineTo(p.x, p.y + p.l); wCtx.stroke();
+            p.y += p.v;
+            if (p.y > weatherCanvas.height) p.y = -p.l;
+        });
+    } else if (weatherType === 'snow') {
+        wCtx.fillStyle = 'rgba(255,255,255,0.8)';
+        particles.forEach(p => {
+            wCtx.beginPath(); wCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2); wCtx.fill();
+            p.y += p.v; p.d += p.s; p.x += Math.sin(p.d) * 1;
+            if (p.y > weatherCanvas.height) p.y = -10;
+            if (p.x > weatherCanvas.width) p.x = 0;
+            if (p.x < 0) p.x = weatherCanvas.width;
+        });
+    }
+    requestAnimationFrame(drawWeather);
+}
+
+function changeWeather(type) {
+    weatherType = type;
+    const status = document.getElementById('weather-status');
+    if (type === 'clear') status.innerText = "현재 맑음: 평온한 마음을 유지하세요.";
+    else if (type === 'rain') status.innerText = "비가 내립니다: 차분하게 루틴을 설계해보세요.";
+    else if (type === 'snow') status.innerText = "눈이 내립니다: 포근한 루틴을 만들어보세요.";
+    createParticles();
+    updateEnvironment();
+}
+
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        initStars();
+        changeWeather('clear');
+        initMeds();
+        buildDiagCards();
+        updateDiagProgress();
+        switchDay(currentActiveDay);
+        updateEnvironment();
+        drawWeather();
+    }, 500);
+});
 </script>
-
 </body>
 </html>
